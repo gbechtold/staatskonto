@@ -111,7 +111,13 @@ select:focus-visible{outline:2px solid var(--out);outline-offset:1px}
 .card-h h3{font-family:"Manrope",sans-serif;font-size:13.5px;font-weight:800;letter-spacing:.01em}
 .card-h .sub{font-size:12px;color:var(--muted);flex:1;min-width:0}
 .hdiv{width:1px;height:15px;background:var(--rule-2);flex:none}
-#bigline{font-size:13px;font-weight:600;color:var(--ink-2)}
+#bigline{flex:none;font-size:13px;color:var(--ink-2);white-space:nowrap}
+.ratio{display:inline-flex;align-items:baseline;gap:6px;border:1px solid var(--rule-2);
+  background:var(--card);padding:4px 11px}
+.ratio b{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-weight:600}
+.ratio b.hi{color:var(--out)}
+.ratio i{font-style:normal;color:var(--muted)}
+@media(max-width:620px){.card-h{flex-wrap:wrap}#bigline{white-space:normal}}
 #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);z-index:80;
   background:var(--pop);color:var(--pop-ink);border:1px solid var(--rule-2);padding:10px 16px;font-size:13px;
   opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;max-width:92vw}
@@ -373,8 +379,8 @@ footer{max-width:1240px;margin:0 auto;padding:0 22px 50px;font-size:11.5px;color
         <div class="card-h">
           <h3>Deine Steuern und Abgaben</h3>
           <button class="info" type="button" data-src="#i-hero">i</button>
-          <span class="hdiv"></span>
-          <span class="sub" id="bigline">—</span>
+          <span class="sub"></span>
+          <span id="bigline">—</span>
         </div>
         <div class="twohalf">
           <div class="half-l">
@@ -644,9 +650,11 @@ function renderCols(m){
 
   g("big-m").textContent=fmt(m.beitrag*F1);
   g("big-lbl").textContent=P().lbl;
-  g("bigline").textContent=m.n
-    ? "1 Euro für dich, "+(m.beitrag/m.n).toLocaleString("de-AT",{minimumFractionDigits:2,maximumFractionDigits:2})+" für den Staat."
-    : "Trag dein Netto ein.";
+  g("bigline").innerHTML=m.n
+    ? '<span class="ratio"><b>1 €</b><i>für dich</i><b class="hi">'+
+      (m.beitrag/m.n).toLocaleString("de-AT",{minimumFractionDigits:2,maximumFractionDigits:2})+
+      ' €</b><i>für den Staat</i></span>'
+    : '<span class="ratio"><i>Trag dein Netto ein</i></span>';
   renderRueck(m);
 }
 

@@ -24,6 +24,30 @@ belegte Wirkungsrechnung steht im Werkzeug drin und ist abgeschaltet.
 Die einzige frei gesetzte Zahl ist der Verbrauchsteuersatz auf die Konsumausgaben.
 Er steht als Regler offen, weil er ueber das halbe Blatt entscheidet.
 
+## Teilen und verlinken
+
+Der Zustand steht in der Adresse, ein Link gibt genau das wieder, was du siehst.
+
+| Parameter | Bedeutung | Beispiel |
+|---|---|---|
+| `n` | Netto im Monat | `n=2099` |
+| `k` | Kinder, 0 bis 3 | `k=2` |
+| `f` | `le` ledig, `vh` verheiratet, `v0` verheiratet ohne Partnereinkommen, `ae` alleinerziehend | `f=ae` |
+| `p` | `m` monatlich, `j` jaehrlich | `p=j` |
+| `v` | Verbrauchsteuersatz in Prozent | `v=18` |
+| `m` | eingeschaltete Massnahmen, mit Komma | `m=val,zd` |
+| `t` | Ansicht `blatt`, `werkstatt`, `fluss` | `t=fluss` |
+| `#GF10` | oeffnet diese Position direkt | `#GF04` |
+
+Beispiele:
+
+```
+?n=1800&k=0&f=le                      Alleinstehend, 1.800 netto
+?n=2500&k=2&f=ae&p=j                  Alleinerziehend mit zwei Kindern, Jahreswerte
+?n=2099&k=2&f=vh&m=val&t=werkstatt    mit wieder eingefuehrter Valorisierung
+?n=2099&k=1&f=vh#GF04                 direkt bei Verkehr und Energie
+```
+
 ## Aufbau
 
 ```

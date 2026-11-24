@@ -112,6 +112,12 @@ select:focus-visible{outline:2px solid var(--out);outline-offset:1px}
 .card-h .sub{font-size:12px;color:var(--muted);flex:1;min-width:0}
 .hdiv{width:1px;height:15px;background:var(--rule-2);flex:none}
 #bigline{font-size:13px;font-weight:600;color:var(--ink-2)}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);z-index:80;
+  background:var(--pop);color:var(--pop-ink);border:1px solid var(--rule-2);padding:10px 16px;font-size:13px;
+  opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;max-width:92vw}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast input{font:inherit;font-size:12px;width:min(420px,76vw);margin-top:8px;padding:6px 8px;
+  background:var(--field);color:var(--ink);border:1px solid var(--rule-2)}
 .twohalf{display:grid;grid-template-columns:1fr 1fr}
 .half-l{min-width:0;border-right:1px solid var(--rule)}
 .half-r{min-width:0;padding:15px;display:flex;flex-direction:column;gap:11px;justify-content:center}
@@ -260,6 +266,7 @@ footer{max-width:1240px;margin:0 auto;padding:0 22px 50px;font-size:11.5px;color
       <div class="brand">Staatskonto</div>
       <div class="brand-sub">Dein Anteil am Staatshaushalt, Österreich</div>
       <div class="spacer"></div>
+      <button class="ghost" id="shareBtn" type="button">Link teilen</button>
       <button class="ghost" id="themeBtn" type="button">Dunkel</button>
     </div>
     <div class="inputs">
@@ -454,6 +461,7 @@ footer{max-width:1240px;margin:0 auto;padding:0 22px 50px;font-size:11.5px;color
 <footer>Prototyp. Offene Daten, offener Code: Rohdaten als CSV mit Abrufskript, Modell als reine Funktion, Maßnahmen und Positionstexte als eigene Dateien. Code MIT, Texte CC-BY.</footer>
 
 <div id="pop" role="tooltip"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 <div class="scrim" id="scrim"></div>
 <aside class="detail" id="detail" aria-hidden="true">
   <div class="dhead">
@@ -762,8 +770,10 @@ function openDetail(id){
   document.getElementById("detail").classList.add("on");
   document.getElementById("detail").setAttribute("aria-hidden","false");
   document.getElementById("scrim").classList.add("on");
+  history.replaceState(null,"",location.pathname+location.search+"#"+id);
 }
 function closeDetail(){
+  if(location.hash) history.replaceState(null,"",location.pathname+location.search);
   document.getElementById("detail").classList.remove("on");
   document.getElementById("detail").setAttribute("aria-hidden","true");
   document.getElementById("scrim").classList.remove("on");
@@ -805,20 +815,22 @@ function update(){
   document.getElementById("lh-per").textContent=P().head;
   document.getElementById("lh-per2").textContent=P().head;
   document.getElementById("w-d").textContent=Object.values(state.on).some(Boolean)?"geändert":"unverändert";
-  sankey(m);
+  sankey(m); syncURL();
 }
 
-document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
-  document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",String(x===t)));
-  ["blatt","werkstatt","fluss"].forEach(v=>document.getElementById("view-"+v).hidden=v!==t.dataset.view);
-  const map={blatt:["Was du einzahlst und wofür es verwendet wird","Trag dein Netto ein. Alles andere rechnet sich daraus. Klick eine Zeile an, um zu sehen, was darin steckt."],
-    werkstatt:["Was eine Maßnahme an deinem Blatt ändert","Schalte eine Maßnahme ein. Jede Zeile zeigt, um wie viel sich dein Beitrag für diese Aufgabe verschiebt."],
-    fluss:["Der Weg deines Geldes","Von den Arbeitskosten deiner Stelle bis zu den größten Aufgaben des Staates."]};
-  document.getElementById("h1").textContent=map[t.dataset.view][0];
-  document.getElementById("lede").textContent=map[t.dataset.view][1];
-  document.getElementById("splitCard").hidden=t.dataset.view==="fluss";
-  hidePop();
-}));
+const VIEWS={blatt:["Was du einzahlst und wofür es verwendet wird","Trag dein Netto ein. Alles andere rechnet sich daraus. Klick eine Zeile an, um zu sehen, was darin steckt."],
+  werkstatt:["Was eine Maßnahme an deinem Blatt ändert","Schalte eine Maßnahme ein. Jede Zeile zeigt, um wie viel sich dein Beitrag für diese Aufgabe verschiebt."],
+  fluss:["Der Weg deines Geldes","Von den Arbeitskosten deiner Stelle bis zu den größten Aufgaben des Staates."]};
+function setView(v,push){
+  if(!VIEWS[v])v="blatt";
+  document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",String(x.dataset.view===v)));
+  Object.keys(VIEWS).forEach(k=>document.getElementById("view-"+k).hidden=k!==v);
+  document.getElementById("h1").textContent=VIEWS[v][0];
+  document.getElementById("lede").textContent=VIEWS[v][1];
+  document.getElementById("splitCard").hidden=v==="fluss";
+  hidePop(); if(push!==false) syncURL();
+}
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>setView(t.dataset.view)));
 const elB=document.getElementById("brutto"), elN=document.getElementById("netto");
 let linking=false;
 elN.addEventListener("input",()=>{if(linking)return;linking=true;elB.value=bruttoAusNetto(+elN.value||0,absetz());linking=false;update();});
@@ -843,7 +855,64 @@ document.querySelectorAll("[data-per]").forEach(b=>b.addEventListener("click",()
   document.querySelectorAll("[data-per]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
   hidePop(); update();
 }));
+/* ---------- URL-Parameter ----------
+   n  Netto im Monat            k  Kinder 0 bis 3
+   f  le ledig · vh verheiratet · v0 verheiratet ohne Partnereinkommen · ae alleinerziehend
+   p  m monatlich · j jährlich  v  Verbrauchsteuersatz in Prozent
+   m  Maßnahmen, Komma          t  blatt · werkstatt · fluss
+   #GF10 öffnet die Position direkt                                            */
+const FAMC={"ledig":"le","verheiratet":"vh","verheiratet, Partner ohne Einkommen":"v0","alleinerziehend":"ae"};
+const FAMB=Object.fromEntries(Object.entries(FAMC).map(([k,v])=>[v,k]));
+let urlReady=false;
+
+function syncURL(){
+  if(!urlReady) return;
+  const q=new URLSearchParams();
+  q.set("n",String(Math.round(+elN.value||0)));
+  q.set("k",String(document.getElementById("kinder").selectedIndex));
+  q.set("f",FAMC[document.getElementById("fam").value]||"vh");
+  if(state.per!=="m") q.set("p",state.per);
+  const v=Math.round(state.vst*100); if(v!==21) q.set("v",String(v));
+  const on=F.MEAS.filter(m=>state.on[m.id]).map(m=>m.id); if(on.length) q.set("m",on.join(","));
+  const t=document.querySelector('.tab[aria-selected="true"]');
+  if(t&&t.dataset.view!=="blatt") q.set("t",t.dataset.view);
+  history.replaceState(null,"",location.pathname+"?"+q.toString()+location.hash);
+}
+
+function readURL(){
+  const q=new URLSearchParams(location.search);
+  const n=+q.get("n"); if(n>0&&n<1e6) elN.value=Math.round(n);
+  const k=q.get("k"); if(k!==null&&+k>=0&&+k<=3) document.getElementById("kinder").selectedIndex=+k;
+  const f=q.get("f"); if(f&&FAMB[f]) document.getElementById("fam").value=FAMB[f];
+  const p=q.get("p"); if(p==="j"||p==="m"){state.per=p;
+    document.querySelectorAll("[data-per]").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.per===p)));}
+  const v=+q.get("v"); if(v>=10&&v<=30){state.vst=v/100;
+    document.getElementById("vstRate").value=String(v); document.getElementById("vstVal").textContent=v+" %";}
+  const m=q.get("m"); if(m) m.split(",").forEach(id=>{
+    const found=F.MEAS.find(x=>x.id===id&&x.mio!==null); if(found) state.on[id]=true;});
+  return q.get("t")||"blatt";
+}
+
+const startView=readURL();
 renderMeasures();
 elB.value=bruttoAusNetto(+elN.value||0,absetz());
+setView(startView,false);
 update();
+urlReady=true; syncURL();
+const hash=location.hash.replace("#","");
+if(F.POS.some(x=>x.id===hash)) openDetail(hash);
+
+/* ---------- Teilen ---------- */
+function toast(text,url){
+  const t=document.getElementById("toast");
+  t.innerHTML=text+(url?'<br><input readonly value="'+url+'">':"");
+  t.classList.add("on");
+  if(url){const i=t.querySelector("input"); i.focus(); i.select();}
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("on"),url?9000:2200);
+}
+document.getElementById("shareBtn").addEventListener("click",async()=>{
+  syncURL();
+  try{ await navigator.clipboard.writeText(location.href); toast("Link kopiert. Er enthält dein Netto, Kinder und Familienstand."); }
+  catch(e){ toast("Zum Kopieren markiert:",location.href); }
+});
 </script>

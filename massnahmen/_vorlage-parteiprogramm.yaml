@@ -1,0 +1,10 @@
+# Vorlage. Eine Datei je Vorhaben. Sie erscheint in der Werkstatt, sobald
+# wirkung_mio_jahr aus einer belegten Rechnung stammt.
+titel: Kurzer Satz, was passiert
+partei: Name der Partei oder Organisation
+jahr: 2026
+stand: Wahlprogramm | Regierungsprogramm | Begutachtung | beschlossen | Forderung
+quelle: Wirkungsfolgenabschaetzung, Budgetdienst oder Rechnungshof. Eigene Schaetzungen nicht.
+quelle_url: https://
+wirkung_mio_jahr: null   # null heisst: Feld bleibt leer und das Werkzeug sagt das
+position: GF10           # GF01 bis GF10, siehe daten/staatsausgaben-cofog.csv

@@ -1,11 +1,11 @@
-code,bezeichnung,mio_2024,mio_2016
-GF10,Soziale Sicherung,112496,75027
-GF07,Gesundheit,46782,29392
-GF04,Wirtschaftliche Angelegenheiten,35029,21125
-GF01,Allgemeine oeffentliche Verwaltung,29860,23218
-GF09,Bildung,26092,17520
-GF03,Oeffentliche Ordnung und Sicherheit,7398,4806
-GF08,Freizeit Kultur Religion,6247,4306
-GF05,Umweltschutz,3484,1269
-GF02,Verteidigung,3340,2168
-GF06,Wohnen und kommunale Einrichtungen,1940,1277
+code,bezeichnung,mio_2010,mio_2016,mio_2019,mio_2021,mio_2024
+GF01,Allgemeine oeffentliche Verwaltung,22650,23218,22811,23512,29860
+GF02,Verteidigung,1936,2168,2429,2431,3340
+GF03,Oeffentliche Ordnung und Sicherheit,4012,4806,5303,5669,7398
+GF04,Wirtschaftliche Angelegenheiten,19906,21125,23761,38254,35029
+GF05,Umweltschutz,1638,1269,1524,1672,3484
+GF06,Wohnen und kommunale Einrichtungen,1197,1277,1279,1297,1940
+GF07,Gesundheit,23967,29392,33225,41031,46782
+GF08,Freizeit Kultur Religion,3889,4306,4596,4920,6247
+GF09,Bildung,15171,17520,19134,19909,26092
+GF10,Soziale Sicherung,62530,75027,80128,88903,112496

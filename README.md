@@ -35,6 +35,7 @@ Der Zustand steht in der Adresse, ein Link gibt genau das wieder, was du siehst.
 | `f` | `le` ledig, `vh` verheiratet, `v0` verheiratet ohne Partnereinkommen, `ae` alleinerziehend | `f=ae` |
 | `p` | `m` monatlich, `j` jaehrlich | `p=j` |
 | `v` | Verbrauchsteuersatz in Prozent | `v=18` |
+| `r` | Vergleichsjahr 2010, 2016, 2019, 2021 | `r=2019` |
 | `m` | eingeschaltete Massnahmen, mit Komma | `m=val,zd` |
 | `t` | Ansicht `blatt`, `werkstatt`, `fluss` | `t=fluss` |
 | `#GF10` | oeffnet diese Position direkt | `#GF04` |
@@ -54,6 +55,7 @@ Beispiele:
 index.html        die ganze Anwendung, eine Datei, ohne Abhaengigkeiten
 daten/            Rohdaten als CSV, dazu das Abrufskript
 massnahmen/       je Massnahme eine Datei mit Titel, Stand, Quelle, Wirkung
+                  _vorlage-parteiprogramm.yaml zeigt das Format
 positionen/       je Ausgabenposition Beschreibung, Mengengeruest, Quellen
 docs/methodik.md  wie gerechnet wird und welche Annahmen tragen
 ```

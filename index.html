@@ -233,6 +233,10 @@ details.fold[open] .fchev{transform:rotate(90deg)}
 .measure .ms{font-size:11.5px;color:var(--muted);margin-top:3px}
 .measure .mi{font-family:"IBM Plex Mono",monospace;font-size:11px;margin-top:4px;color:var(--ink-2)}
 .measure.empty .mt{color:var(--muted)}
+.mgroup{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  padding:12px 15px 6px;background:var(--card-2);border-bottom:1px solid var(--rule)}
+.mstub{font-size:12.5px;color:var(--muted);padding:12px 15px;line-height:1.5}
+.mstub code{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-2)}
 .slider{padding:13px 15px;border-top:1px solid var(--rule)}
 .slider input{width:100%;accent-color:var(--out)}
 .delta{font-family:"IBM Plex Mono",monospace;font-size:12px;margin-left:7px}
@@ -315,6 +319,7 @@ footer{max-width:1240px;margin:0 auto;padding:0 22px 50px;font-size:11.5px;color
 <div class="src" id="i-c">Dienstgeberseite nach den gesetzlichen Sätzen 2026: Sozialversicherung 20,98, Kommunalsteuer 3,0, Dienstgeberbeitrag und Zuschlag 4,07, Betriebliche Vorsorge 1,53 Prozent. Zusammen 29,58 Prozent des Bruttolohns. Die <b>Verbrauchsteuer</b> ist der eine frei gesetzte Parameter des ganzen Blattes, verstellbar in der Werkstatt.</div>
 <div class="src" id="i-hero">Das ist die Summe aus B und C. Sie ist kein Abzug von deinem Konto, sondern alles, was deine Arbeit und dein Konsum an Staat und Sozialversicherung abgeben.</div>
 <div class="src" id="i-ledger">Die Zuteilung ist eine <b>Konvention, keine Tatsache</b>. Geld ist nicht eingefärbt, dein Beitrag finanziert nicht anteilig jede Aufgabe. Das Blatt zeigt, wie sich die Staatsausgaben aufteilen, und rechnet deinen Beitrag in diese Aufteilung um. Quelle: Eurostat, Sektor Staat Österreich 2024, Ausgaben nach COFOG-Gruppen. Die zehn Funktionen addieren sich auf 272.668 Mio., die Gesamtausgabe beträgt 273.192 Mio. Die Differenz von 523 Mio. ist eine Abgrenzung der Statistik, keine Rundung. Geprüft gegen die Eurostat-API am 24.11.2026.</div>
+<div class="src" id="i-jahr">Die Spalte in der Tabelle zeigt, welchen Anteil eine Aufgabe in diesem Jahr hatte, und darunter die Verschiebung in Prozentpunkten. Vier Jahre stehen zur Wahl, jedes beantwortet eine andere Frage. <b>2010</b> liegt vor der Schuldenbremse, <b>2016</b> vor der Steuerreform, <b>2019</b> ist das letzte Jahr vor Corona und damit der sauberste Vergleich, <b>2021</b> der Höhepunkt der Hilfen: dort springt der Posten Wirtschaft auf 16,8 Prozent. Quelle für alle Jahre: Eurostat, Sektor Staat, Ausgaben nach COFOG.</div>
 <div class="src" id="i-mass">Jede Maßnahme ist im Repo eine Datei mit Titel, Stand, Quelle und Wirkung in Millionen pro Jahr. Die Oberfläche liest den Ordner und baut daraus die Schalter. Wer eine Maßnahme ergänzen will, schickt eine Datei, keinen Code. Hausregel: nur Zahlen aus Wirkungsfolgenabschätzung, Budgetdienst oder Rechnungshof. Gibt es keine, bleibt das Feld leer, und das Blatt sagt das.</div>
 
 <main class="sheet">
@@ -417,7 +422,7 @@ footer{max-width:1240px;margin:0 auto;padding:0 22px 50px;font-size:11.5px;color
           <span class="sub">Klick eine Zeile auf</span>
           <button class="info" type="button" data-src="#i-ledger">i</button></div>
         <div class="card-b" style="padding:12px 0 0">
-          <div class="lhead lbl"><span>Aufgabe</span><span>Anteil</span><span>2016</span><span id="lh-per">Monat</span><span></span></div>
+          <div class="lhead lbl"><span>Aufgabe</span><span>Anteil</span><span class="refhead">2016</span><span id="lh-per">Monat</span><span></span></div>
           <div id="rows"></div>
           <div class="ltot"><span>Summe</span><span class="v">100 %</span><span class="v">100 %</span><span class="v" id="t-m">—</span><span></span></div>
           <div class="credit"><span>Dazu nimmt der Staat für dich Kredit auf. Den zahlst du später. Oder deine Kinder.</span>
@@ -434,10 +439,23 @@ footer{max-width:1240px;margin:0 auto;padding:0 22px 50px;font-size:11.5px;color
       <div class="card">
         <div class="card-h"><h3>Wirkung auf dein Blatt</h3><span class="sub" id="w-d">unverändert</span></div>
         <div class="card-b" style="padding:12px 0 0">
-          <div class="lhead lbl"><span>Aufgabe</span><span>Anteil</span><span>2016</span><span id="lh-per2">Monat</span><span></span></div>
+          <div class="lhead lbl"><span>Aufgabe</span><span>Anteil</span><span class="refhead">2016</span><span id="lh-per2">Monat</span><span></span></div>
           <div id="rows2"></div>
           <div class="ltot"><span>Summe</span><span class="v">100 %</span><span class="v">100 %</span><span class="v" id="w-m">—</span><span></span></div>
           <div style="height:14px"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:18px">
+        <div class="card-h"><h3>Vergleichsjahr</h3><span class="sub">für die Spalte in der Tabelle</span>
+          <button class="info" type="button" data-src="#i-jahr">i</button></div>
+        <div class="card-b">
+          <div class="seg" role="group" aria-label="Vergleichsjahr" id="refseg">
+            <button type="button" data-ref="2010" aria-pressed="false">2010</button>
+            <button type="button" data-ref="2016" aria-pressed="true">2016</button>
+            <button type="button" data-ref="2019" aria-pressed="false">2019</button>
+            <button type="button" data-ref="2021" aria-pressed="false">2021</button>
+          </div>
+          <p id="refnote" style="font-size:12.5px;color:var(--muted);margin:10px 0 0"></p>
         </div>
       </div>
       <div class="card">
@@ -480,7 +498,7 @@ footer{max-width:1240px;margin:0 auto;padding:0 22px 50px;font-size:11.5px;color
 <script>
 const F = {
   POS:[
-    {id:"GF10",n:"Pensionen, Beihilfen, AMS, Pflegegeld",mio:112496,p16:75027,sub:[
+    {id:"GF10",n:"Pensionen, Beihilfen, AMS, Pflegegeld",mio:112496,sub:[
       ["Alterspensionen",70696,"https://www.pv.at/"],
       ["Familienleistungen und Kinder",10258,"https://www.bundeskanzleramt.gv.at/agenda/familie/familienbeihilfe.html"],
       ["Krankheit und Behinderung",8717,"https://www.sozialversicherung.gv.at/"],
@@ -488,13 +506,13 @@ const F = {
       ["Hinterbliebene",6687,"https://www.pv.at/"],
       ["Arbeitslosigkeit",6102,"https://www.ams.at/"],
       ["Pflege und Übrige",1764,"https://www.sozialministerium.gv.at/Themen/Pflege/Pflegegeld.html"]]},
-    {id:"GF07",n:"Spitäler, Ärztinnen, Medikamente",mio:46782,p16:29392,sub:[
+    {id:"GF07",n:"Spitäler, Ärztinnen, Medikamente",mio:46782,sub:[
       ["Spitäler",26328,"https://goeg.at/"],
       ["Niedergelassene Ärztinnen und Ärzte",9014,"https://www.sozialversicherung.gv.at/"],
       ["Medikamente und Hilfsmittel",5888],
       ["Öffentlicher Gesundheitsdienst",1284,"https://goeg.at/"],
       ["Übrige",4268]]},
-    {id:"GF04",n:"Verkehr, Energie, Wirtschaft",mio:35029,p16:21125,sub:[
+    {id:"GF04",n:"Verkehr, Energie, Wirtschaft",mio:35029,sub:[
       ["Schiene: Zuschuss an die ÖBB-Infrastruktur",2510,"https://infrastruktur.oebb.at/"],
       ["Straßen der Länder und Gemeinden, Öffis, übriger Verkehr",14376],
       ["Wirtschaft und Arbeitsmarkt allgemein",7456],
@@ -502,42 +520,42 @@ const F = {
       ["Energie",2066],
       ["Landwirtschaft und Forst",2059],
       ["Übrige",1431]]},
-    {id:"GF01",n:"Ämter, Gemeinden, Zinsen",mio:29860,p16:23218,sub:[
+    {id:"GF01",n:"Ämter, Gemeinden, Zinsen",mio:29860,sub:[
       ["Verwaltung und Finanzverwaltung",10158],
       ["Zinsen für alte Schulden",8277,"https://www.oebfa.at/"],
       ["Allgemeine Dienste",7547],
       ["Übrige",3878]]},
-    {id:"GF09",n:"Kindergärten, Schulen, Universitäten",mio:26092,p16:17520,sub:[
+    {id:"GF09",n:"Kindergärten, Schulen, Universitäten",mio:26092,sub:[
       ["Sekundarstufe",10315,"https://www.bmbwf.gv.at/"],
       ["Kindergarten und Volksschule",8547,"https://www.bmbwf.gv.at/"],
       ["Hochschulen",4092,"https://www.bmbwf.gv.at/"],
       ["Schülertransport und Verpflegung",1142],
       ["Übrige",1996]]},
-    {id:"GF03",n:"Polizei, Justiz, Feuerwehr",mio:7398,p16:4806,sub:[
+    {id:"GF03",n:"Polizei, Justiz, Feuerwehr",mio:7398,sub:[
       ["Polizei",3691,"https://www.bmi.gv.at/"],
       ["Gerichte",1456],
       ["Feuerwehr",1001],
       ["Übrige",1250]]},
-    {id:"GF08",n:"Sport, Musikschulen, Museen, Kirchen",mio:6247,p16:4306,sub:[
+    {id:"GF08",n:"Sport, Musikschulen, Museen, Kirchen",mio:6247,sub:[
       ["Kultur",2813,"https://www.bmkoes.gv.at/"],
       ["Sport und Erholung",1711,"https://www.bmkoes.gv.at/"],
       ["Rundfunk und Verlagswesen",1315],
       ["Religionsgemeinschaften",245],
       ["Übrige",163]]},
-    {id:"GF05",n:"Abwasser, Luft, Abfall",mio:3484,p16:1269,sub:[
+    {id:"GF05",n:"Abwasser, Luft, Abfall",mio:3484,sub:[
       ["Luftreinhaltung und Lärmschutz",2266],
       ["Abwasser",382],
       ["Abfall und übriger Umweltschutz",836]]},
-    {id:"GF02",n:"Bundesheer",mio:3340,p16:2168,sub:[
+    {id:"GF02",n:"Bundesheer",mio:3340,sub:[
       ["Betrieb, Personal, Investitionen",3340,"https://www.bundesheer.at/"]]},
-    {id:"GF06",n:"Wohnbauförderung, Ortsentwicklung",mio:1940,p16:1277,sub:[
+    {id:"GF06",n:"Wohnbauförderung, Ortsentwicklung",mio:1940,sub:[
       ["Wohnbau",1169],["Ortsentwicklung",205],["Wasser, Beleuchtung, übrige",566]]}
   ],
   MEAS:[
-    {id:"val",t:"Valorisierung der Familienleistungen wieder in Kraft",s:"Forderung des Familienverbandes",q:"eigene Addition aus zwei Budgetdienst-Analysen, UG 25",mio:416,pos:"GF10"},
-    {id:"dgb",t:"Dienstgeberbeitrag von 3,7 auf 2,7 Prozent",s:"beschlossen, wirksam ab 2028",q:"Budgetdienst, BBG 2027-2028",mio:0,pos:null,dgb:-0.01},
-    {id:"zd",t:"Zukunftsdepot, Startguthaben für zwei Jahrgänge",s:"Begutachtung abgeschlossen",q:"§ 39p FLAG, 40 Mio. je Jahr",mio:40,pos:"GF10"},
-    {id:"pens",t:"Faktisches Pensionsantrittsalter plus ein Jahr",s:"ohne belegte Wirkungsrechnung",q:"keine Quelle, Feld bleibt leer",mio:null,pos:"GF10"}
+    {id:"val",prog:"Forderungen der Interessenvertretungen",t:"Valorisierung der Familienleistungen wieder in Kraft",s:"Forderung des Familienverbandes",q:"eigene Addition aus zwei Budgetdienst-Analysen, UG 25",mio:416,pos:"GF10"},
+    {id:"dgb",prog:"Budgetbegleitgesetz 2027-2028, beschlossen",t:"Dienstgeberbeitrag von 3,7 auf 2,7 Prozent",s:"beschlossen, wirksam ab 2028",q:"Budgetdienst, BBG 2027-2028",mio:0,pos:null,dgb:-0.01},
+    {id:"zd",prog:"Regierungsvorhaben in Begutachtung",t:"Zukunftsdepot, Startguthaben für zwei Jahrgänge",s:"Begutachtung abgeschlossen",q:"§ 39p FLAG, 40 Mio. je Jahr",mio:40,pos:"GF10"},
+    {id:"pens",prog:"Forderungen der Interessenvertretungen",t:"Faktisches Pensionsantrittsalter plus ein Jahr",s:"ohne belegte Wirkungsrechnung",q:"keine Quelle, Feld bleibt leer",mio:null,pos:"GF10"}
   ],
   TXT:{
     GF10:{was:"Pensionen, Familienleistungen, Arbeitslosengeld, Pflegegeld und Sozialhilfe. Der größte Block, und der einzige, bei dem fast jeder im Lauf seines Lebens auf beiden Seiten steht.",
@@ -548,6 +566,22 @@ const F = {
       wer:"Bund für die Schiene, Länder für Landesstraßen, Gemeinden für den Ortsbereich. Die Autobahnen betreibt die ASFINAG, sie liegt außerhalb des Staatssektors.",
       mg:[["Zuschuss des Bundes an die ÖBB-Infrastruktur 2024","2,51 Mrd."],["ÖBB-Rahmenplan 2024 bis 2029","21,1 Mrd."],["ASFINAG, Investition 2024","1,5 Mrd."],["ASFINAG, Mauteinnahmen 2024","2,5 Mrd."],["davon Vignette","609 Mio."],["Autobahn und Schnellstraße","2.266 km"]],
       inits:[["Die Autobahn kostet dich keine Steuern","Befund","Die ASFINAG finanziert Bau und Erhaltung ausschließlich aus Nutzungsentgelten, ohne Zuschuss aus dem Bundesbudget. Statistik Austria führt sie als Marktproduzent außerhalb des Staatssektors, weil sie ihre Kosten zu mehr als der Hälfte aus Markterlösen deckt. In dieser Tabelle taucht sie deshalb nicht auf. Was du über Maut und Vignette zahlst, steht auf keinem Steuerbescheid. Zwei Einschränkungen gehören dazu: die Anleihen der ASFINAG tragen eine Haftung des Bundes, und die Gesellschaft zahlt Dividende an den Bund."],["Schiene statt Straße","laufend","Vom Verkehrsbudget des Staates geht der sichtbarste Einzelposten an die Schiene: 2,51 Mrd. Zuschuss an die ÖBB-Infrastruktur im Jahr 2024. Bis 2029 sind 21,1 Mrd. an Investitionen geplant, darunter Semmering-, Koralm- und Brennertunnel."]]},
+    GF09:{was:"Kindergärten, Volksschulen, Mittelschulen, AHS und BHS, Berufsschulen, Fachhochschulen und Universitäten. Der zweitgrößte Brocken nach Pensionen und Gesundheit, und der mit dem längsten Rückfluss: er zahlt sich erst zwanzig Jahre später aus.",
+      wer:"Der Bund zahlt die Lehrpersonen der Bundesschulen und die Universitäten, die Länder die Pflichtschullehrer, die Gemeinden Kindergärten und Schulgebäude.",
+      mg:[["Schülerinnen und Schüler 2024/25","1.185.525"],["davon in Volksschulen","376.203"],["Lehrpersonen","128.385"],["Studierende an öffentlichen Universitäten","292.856"],["Anteil an allen Staatsausgaben","9,6 %"]],
+      inits:[["Der Anteil steht seit 2010 still","Befund","2010 gingen 9,7 Prozent der Staatsausgaben in Bildung, 2024 sind es 9,6. In Euro ist der Posten von 15,2 auf 26,1 Mrd. gewachsen, im Anteil nicht. Wer mehr Bildung will, muss sagen, woher der Anteil kommen soll."]]},
+    GF05:{was:"Abwasser und Kanal, Abfallwirtschaft, Luftreinhaltung, Lärmschutz und Klimaschutz. Der kleinste große Posten, und der am schnellsten wachsende.",
+      wer:"Überwiegend Gemeinden und Gemeindeverbände, beim Klimaschutz der Bund.",
+      mg:[["Abfallaufkommen 2024","rund 67 Mio. t"],["davon Aushubmaterial","rund 57 %"],["Anschlussgrad an Kanal und Kläranlage","96,2 %"],["Ausgaben 2010","1.638 Mio."],["Ausgaben 2024","3.484 Mio."]],
+      inits:[["Verdoppelt in vierzehn Jahren","Befund","Kein anderer Posten ist so schnell gewachsen: von 1.638 Mio. im Jahr 2010 auf 3.484 Mio. 2024, der Anteil von 1,0 auf 1,3 Prozent. Der Treiber sitzt in der Luftreinhaltung und im Klimaschutz, nicht im Kanal."]]},
+    GF06:{was:"Wohnbauförderung der Länder, Ortsentwicklung, Wasserversorgung und Straßenbeleuchtung.",
+      wer:"Fast ausschließlich Länder und Gemeinden. Der Bund überweist dafür Ertragsanteile.",
+      mg:[["Wohnbauförderung der Länder 2024","2,51 Mrd."],["Förderungszusicherungen 2024","rund 19.200"],["in der Staatsrechnung","1.940 Mio."]],
+      inits:[["Zwei Zahlen für dieselbe Sache","Befund","Die Länderstatistik weist für 2024 eine Wohnbauförderung von 2,51 Mrd. aus, die Staatsrechnung für diese Position 1,94 Mrd. Der Unterschied liegt daran, dass ein Teil der Förderung aus Darlehen besteht, und Darlehen sind nach den Regeln der Volkswirtschaftlichen Gesamtrechnung keine Ausgabe, sondern eine Finanztransaktion. Beide Zahlen stimmen, sie messen Verschiedenes."]]},
+    GF08:{was:"Museen, Theater, Musikschulen, Bibliotheken, Sportstätten und Sportförderung, öffentlich-rechtlicher Rundfunk und Beiträge an Religionsgemeinschaften.",
+      wer:"Alle drei Ebenen. Die Gemeinden tragen den größten Teil der Musikschulen und Sportstätten.",
+      mg:[["Kultur","2.813 Mio."],["Sport und Erholung","1.711 Mio."],["Rundfunk und Verlagswesen","1.315 Mio."],["Religionsgemeinschaften","245 Mio."]],
+      inits:[["Der Rundfunk steht seit 2024 anders in der Rechnung","Befund","Mit 1. Jänner 2024 hat der ORF-Beitrag die GIS-Gebühr abgelöst. Er ist eine Abgabe, nicht ein Entgelt für eine Leistung, und läuft deshalb über die Staatsrechnung: als Einnahme des Staates und als Ausgabe in dieser Position."]]},
     GF01:{was:"Die Verwaltung selbst, von der Gemeindestube bis zur Botschaft, dazu die Zinsen für die Schulden der Vorjahre.",
       wer:"Alle drei Ebenen. Die Zinsen trägt überwiegend der Bund.",
       mg:[["Zinsen je Jahr","8,3 Mrd."],["Anteil der Zinsen an dieser Position","28 %"]],
@@ -587,9 +621,17 @@ function rueckfluss(){
 
 const fmt=n=>Math.round(n).toLocaleString("de-AT").replace(/^-/,"−");
 const pct=n=>n.toLocaleString("de-AT",{minimumFractionDigits:1,maximumFractionDigits:1})+" %";
-const TOT=F.POS.reduce((a,p)=>a+p.mio,0), TOT16=F.POS.reduce((a,p)=>a+p.p16,0);
+const TOT=F.POS.reduce((a,p)=>a+p.mio,0);
+/* Ausgaben nach COFOG, Eurostat, Sektor Staat Österreich, in Mio EUR */
+const YEARS={
+ 2010:{t:156897,GF01:22650,GF02:1936,GF03:4012,GF04:19906,GF05:1638,GF06:1197,GF07:23967,GF08:3889,GF09:15171,GF10:62530},
+ 2016:{t:180108,GF01:23218,GF02:2168,GF03:4806,GF04:21125,GF05:1269,GF06:1277,GF07:29392,GF08:4306,GF09:17520,GF10:75027},
+ 2019:{t:194189,GF01:22811,GF02:2429,GF03:5303,GF04:23761,GF05:1524,GF06:1279,GF07:33225,GF08:4596,GF09:19134,GF10:80128},
+ 2021:{t:227597,GF01:23512,GF02:2431,GF03:5669,GF04:38254,GF05:1672,GF06:1297,GF07:41031,GF08:4920,GF09:19909,GF10:88903}};
+const JAHRTEXT={2010:"vor der Schuldenbremse",2016:"vor der Steuerreform 2016",
+  2019:"letztes Jahr vor Corona",2021:"Höhepunkt der Hilfen"};
 const EXP_OVER_REV=273192/250239, MONTHS=14;
-let state={dg:.2958,spar:.09,vst:.21,per:"m",on:{}};
+let state={dg:.2958,spar:.09,vst:.21,per:"m",ref:2016,on:{}};
 const P=()=>state.per==="j"?{f:14,f12:12,lbl:"im Jahr",head:"Jahr"}:{f:1,f12:1,lbl:"im Monat",head:"Monat"};
 const KONSUM=[["Wohnen und Energie",26.4],["Verkehr",13.6],["Ernährung, alkoholfreie Getränke",11.6],
   ["Freizeit, Sport, Kultur",11.4],["Gastronomie",6.6],["Wohnungsausstattung",6.2],["Gesundheit",4.8],
@@ -677,7 +719,7 @@ function renderRueck(m){
 }
 
 function rowHTML(p,val,share,maxShare,delta){
-  const s16=p.p16/TOT16, dp=+(share*100-s16*100).toFixed(1);
+  const Y=YEARS[state.ref], s16=Y[p.id]/Y.t, dp=+(share*100-s16*100).toFixed(1);
   const d=delta!==undefined&&Math.abs(delta)>=.5/P().f
     ?'<span class="delta '+(delta>0?"up":"down")+'">'+(delta>0?"+":"−")+fmt(Math.abs(delta)*P().f)+'</span>':"";
   return '<button class="row" type="button" aria-expanded="false" data-id="'+p.id+'">'+
@@ -711,14 +753,24 @@ function renderLedger(m,target,withDelta){
 }
 
 function renderMeasures(){
-  document.getElementById("measures").innerHTML=F.MEAS.map(m=>{
-    const empty=m.mio===null;
-    return '<label class="measure'+(empty?" empty":"")+'"><input type="checkbox" data-m="'+m.id+'"'+
-      (empty?" disabled":"")+(state.on[m.id]?" checked":"")+'><span><span class="mt">'+m.t+'</span>'+
-      '<span class="ms">'+m.s+'</span><span class="mi">'+
-      (empty?"Wirkung: Feld leer":(m.dgb?"Dienstgeberbeitrag −1,0 Prozentpunkt":"+"+fmt(m.mio)+" Mio. je Jahr"))+
-      ' · '+m.q+'</span></span></label>';
-  }).join("");
+  const gruppen={};
+  F.MEAS.forEach(m=>{(gruppen[m.prog||"Ohne Programm"]=gruppen[m.prog||"Ohne Programm"]||[]).push(m);});
+  let h="";
+  Object.keys(gruppen).forEach(g=>{
+    h+='<div class="mgroup">'+g+'</div>'+gruppen[g].map(m=>{
+      const empty=m.mio===null&&!m.dgb;
+      return '<label class="measure'+(empty?" empty":"")+'"><input type="checkbox" data-m="'+m.id+'"'+
+        (empty?" disabled":"")+(state.on[m.id]?" checked":"")+'><span><span class="mt">'+m.t+'</span>'+
+        '<span class="ms">'+m.s+'</span><span class="mi">'+
+        (empty?"Wirkung: Feld leer":(m.dgb?"Dienstgeberbeitrag −1,0 Prozentpunkt":"+"+fmt(m.mio)+" Mio. je Jahr"))+
+        ' · '+m.q+'</span></span></label>';
+    }).join("");
+  });
+  h+='<div class="mgroup">Wahlprogramme der Parteien</div>'+
+     '<div class="mstub">Noch keine aufgenommen. Ein Programm kommt in die Liste, sobald seine Wirkung in Millionen aus einer Wirkungsfolgenabschätzung, einer Analyse des Budgetdienstes oder einem Rechnungshofbericht belegt ist. Eigene Schätzungen kommen nicht hinein.'+
+     '<br><br>Eine Datei je Vorhaben in <code>massnahmen/</code>:<br>'+
+     '<code>titel · partei · jahr · stand · quelle · quelle_url · wirkung_mio_jahr · position</code></div>';
+  document.getElementById("measures").innerHTML=h;
   document.querySelectorAll("[data-m]").forEach(c=>c.addEventListener("change",()=>{
     state.on[c.dataset.m]=c.checked; update();
   }));
@@ -858,6 +910,15 @@ document.getElementById("themeBtn").addEventListener("click",()=>{
   document.documentElement.setAttribute("data-theme",dark?"light":"dark");
   document.getElementById("themeBtn").textContent=dark?"Dunkel":"Hell";
 });
+document.querySelectorAll("[data-ref]").forEach(b=>b.addEventListener("click",()=>{
+  state.ref=+b.dataset.ref;
+  document.querySelectorAll("[data-ref]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+  document.querySelectorAll(".refhead").forEach(x=>x.textContent=String(state.ref));
+  document.getElementById("refnote").textContent=
+    state.ref+", "+JAHRTEXT[state.ref]+". Die Ausgaben des Staates betrugen damals "+
+    fmt(YEARS[state.ref].t)+" Mio., heute "+fmt(TOT)+" Mio.";
+  update();
+}));
 document.querySelectorAll("[data-per]").forEach(b=>b.addEventListener("click",()=>{
   state.per=b.dataset.per;
   document.querySelectorAll("[data-per]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
@@ -880,6 +941,7 @@ function syncURL(){
   q.set("k",String(document.getElementById("kinder").selectedIndex));
   q.set("f",FAMC[document.getElementById("fam").value]||"vh");
   if(state.per!=="m") q.set("p",state.per);
+  if(state.ref!==2016) q.set("r",String(state.ref));
   const v=Math.round(state.vst*100); if(v!==21) q.set("v",String(v));
   const on=F.MEAS.filter(m=>state.on[m.id]).map(m=>m.id); if(on.length) q.set("m",on.join(","));
   const t=document.querySelector('.tab[aria-selected="true"]');
@@ -896,6 +958,9 @@ function readURL(){
     document.querySelectorAll("[data-per]").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.per===p)));}
   const v=+q.get("v"); if(v>=10&&v<=30){state.vst=v/100;
     document.getElementById("vstRate").value=String(v); document.getElementById("vstVal").textContent=v+" %";}
+  const r=+q.get("r"); if(YEARS[r]){state.ref=r;
+    document.querySelectorAll("[data-ref]").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.ref===r)));
+    document.querySelectorAll(".refhead").forEach(x=>x.textContent=String(r));}
   const m=q.get("m"); if(m) m.split(",").forEach(id=>{
     const found=F.MEAS.find(x=>x.id===id&&x.mio!==null); if(found) state.on[id]=true;});
   return q.get("t")||"blatt";
@@ -906,6 +971,9 @@ renderMeasures();
 elB.value=bruttoAusNetto(+elN.value||0,absetz());
 setView(startView,false);
 update();
+document.getElementById("refnote").textContent=
+  state.ref+", "+JAHRTEXT[state.ref]+". Die Ausgaben des Staates betrugen damals "+
+  fmt(YEARS[state.ref].t)+" Mio., heute "+fmt(TOT)+" Mio.";
 urlReady=true; syncURL();
 const hash=location.hash.replace("#","");
 if(F.POS.some(x=>x.id===hash)) openDetail(hash);

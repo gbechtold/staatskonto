@@ -1,0 +1,849 @@
+<title>Staatskonto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --paper:#F4EFE7; --card:#FFFDFA; --card-2:#F7F2EA; --ink:#16243F; --ink-2:#44536E;
+  --muted:#7E7768; --rule:#DED6C8; --rule-2:#C5BAA8;
+  --out:#D97E12; --out-soft:#F6E3C8; --back:#36705C; --back-soft:#D8E8E0; --warn:#A33A1F;
+  --field:#FFFFFF; --chrome:#16243F; --chrome-ink:#F7F2E8; --chrome-mut:#A6B2C6; --chrome-rule:#31405C;
+  --invert-bg:#16243F; --invert-ink:#FBF7F0; --invert-mut:#AEB9CC;
+  --pop:#16243F; --pop-ink:#F4EFE7; --pop-mut:#B6C0D2;
+  --shadow:rgba(22,36,63,.10); --grid:rgba(22,36,63,.045);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#10151D; --card:#19202B; --card-2:#1F2733; --ink:#EFE8DA; --ink-2:#BDC6D4;
+    --muted:#8E887A; --rule:#2B3440; --rule-2:#3C4654;
+    --out:#EDA451; --out-soft:#3A2E1D; --back:#74B396; --back-soft:#1E2E29; 
+    --warn:#E07A55;
+    --field:#232C39; --chrome:#0B0F15; --chrome-ink:#EFE8DA; --chrome-mut:#8D98AB; --chrome-rule:#2B3440;
+    --invert-bg:#EFE8DA; --invert-ink:#111720; --invert-mut:#56514A;
+    --pop:#2A3444; --pop-ink:#EFE8DA; --pop-mut:#A9B3C2;
+    --shadow:rgba(0,0,0,.5); --grid:rgba(255,255,255,.035);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#10151D; --card:#19202B; --card-2:#1F2733; --ink:#EFE8DA; --ink-2:#BDC6D4;
+  --muted:#8E887A; --rule:#2B3440; --rule-2:#3C4654;
+  --out:#EDA451; --out-soft:#3A2E1D; --back:#74B396; --back-soft:#1E2E29; --warn:#E07A55;
+  --field:#232C39; --chrome:#0B0F15; --chrome-ink:#EFE8DA; --chrome-mut:#8D98AB; --chrome-rule:#2B3440;
+  --invert-bg:#EFE8DA; --invert-ink:#111720; --invert-mut:#56514A;
+  --pop:#2A3444; --pop-ink:#EFE8DA; --pop-mut:#A9B3C2;
+  --shadow:rgba(0,0,0,.5); --grid:rgba(255,255,255,.035);
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.rb-v{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:19px;font-weight:700}
+.rb-s{font-size:11.5px;color:var(--muted);font-family:"IBM Plex Mono",monospace;margin-top:3px}
+body{margin:0;color:var(--ink);font-family:"Manrope",ui-sans-serif,"Helvetica Neue",Arial,sans-serif;
+  font-size:15px;line-height:1.5;
+  background:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:26px 26px}
+h1,h2,h3{font-family:"Newsreader",Georgia,"Times New Roman",serif;font-weight:600;text-wrap:balance;margin:0}
+.num,.v{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+.lbl{font-size:10px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- Kopfschiene ---------- */
+.rail{position:sticky;top:0;z-index:30;background:var(--chrome);color:var(--chrome-ink);
+  border-bottom:1px solid var(--chrome-rule)}
+.rail-in{max-width:1240px;margin:0 auto;padding:13px 22px 0}
+.brandrow{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap}
+.brand{font-family:"Newsreader",Georgia,serif;font-size:22px;font-weight:600}
+.brand-sub{font-size:12px;color:var(--chrome-mut)}
+.rail .spacer{flex:1}
+.ghost{background:none;border:1px solid var(--chrome-rule);color:var(--chrome-ink);font:inherit;font-size:12px;
+  padding:5px 11px;cursor:pointer;border-radius:2px}
+.ghost:hover{border-color:var(--out)}
+.ghost:focus-visible{outline:2px solid var(--out);outline-offset:2px}
+
+.inputs{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end;padding:13px 0 14px}
+.fieldwrap{display:flex;flex-direction:column;gap:5px}
+.fieldwrap .lbl{color:var(--chrome-mut)}
+.field{display:flex;align-items:baseline;gap:7px;background:var(--field);border:1px solid var(--rule-2);
+  padding:7px 11px;border-radius:2px;color:var(--ink)}
+.field input{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:20px;font-weight:600;
+  border:none;background:none;color:var(--ink);width:86px;text-align:right;padding:0}
+.field input:focus{outline:none}
+.field--big{padding:8px 14px;border-width:2px;border-color:var(--out)}
+.field--big input{font-size:33px;width:120px}
+.field--small{padding:5px 10px}
+.field--small input{font-size:16px;font-weight:500;width:72px;color:var(--ink-2)}
+.field:focus-within{border-color:var(--out);box-shadow:0 0 0 2px var(--out-soft)}
+.field .cur{font-size:11px;color:var(--muted)}
+.picks{display:flex;gap:8px;flex-wrap:wrap}
+select{font:inherit;font-size:13px;background:var(--field);color:var(--ink);border:1px solid var(--rule-2);
+  padding:6px 8px;border-radius:2px}
+select:focus-visible{outline:2px solid var(--out);outline-offset:1px}
+.tabs{display:flex;gap:2px}
+.tab{font:inherit;font-size:13.5px;font-weight:700;background:none;border:none;color:var(--chrome-mut);
+  padding:10px 17px;cursor:pointer;border-bottom:3px solid transparent}
+.tab[aria-selected="true"]{color:var(--chrome-ink);border-bottom-color:var(--out);background:rgba(217,126,18,.10)}
+.tab:focus-visible{outline:2px solid var(--out);outline-offset:-3px}
+
+/* ---------- Infobubble ---------- */
+.info{width:17px;height:17px;flex:none;border-radius:50%;border:1px solid var(--rule-2);background:var(--card);
+  color:var(--muted);font:700 10px/15px "Manrope",sans-serif;cursor:pointer;padding:0;text-align:center}
+.info:hover{border-color:var(--out);color:var(--out)}
+.info:focus-visible{outline:2px solid var(--out);outline-offset:2px}
+.src{display:none}
+#pop{position:absolute;z-index:70;max-width:330px;background:var(--pop);color:var(--pop-ink);
+  border:1px solid var(--rule-2);padding:12px 14px;font-size:13px;line-height:1.5;box-shadow:0 10px 30px var(--shadow);
+  opacity:0;pointer-events:none;transition:opacity .14s}
+#pop.on{opacity:1;pointer-events:auto}
+#pop b{color:var(--out)}
+
+/* ---------- Karten ---------- */
+.sheet{max-width:1240px;margin:0 auto;padding:24px 22px 70px;display:flex;flex-direction:column;gap:18px}
+.head{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}
+.head h1{font-size:clamp(26px,3.6vw,38px);line-height:1.08}
+.head .lede{color:var(--ink-2);max-width:52ch;font-size:14.5px;margin:0}
+.seg{display:inline-flex;border:1px solid var(--rule-2);background:var(--card)}
+.seg button{font:inherit;font-size:12.5px;font-weight:700;padding:6px 15px;background:none;border:none;
+  color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--card)}
+.seg button:focus-visible{outline:2px solid var(--out);outline-offset:-2px}
+.card{background:var(--card);border:1px solid var(--rule);box-shadow:0 1px 0 var(--shadow)}
+.card-h{display:flex;align-items:center;gap:9px;padding:11px 15px;border-bottom:1px solid var(--rule);
+  background:var(--card-2)}
+.card-h h3{font-family:"Manrope",sans-serif;font-size:13.5px;font-weight:800;letter-spacing:.01em}
+.card-h .sub{font-size:12px;color:var(--muted);flex:1;min-width:0}
+.hdiv{width:1px;height:15px;background:var(--rule-2);flex:none}
+#bigline{font-size:13px;font-weight:600;color:var(--ink-2)}
+.twohalf{display:grid;grid-template-columns:1fr 1fr}
+.half-l{min-width:0;border-right:1px solid var(--rule)}
+.half-r{min-width:0;padding:15px;display:flex;flex-direction:column;gap:11px;justify-content:center}
+@media(max-width:780px){.twohalf{grid-template-columns:1fr}
+  .half-l{border-right:none;border-bottom:1px solid var(--rule)}}
+.card-b{padding:13px 15px 15px}
+
+/* Verteilungsbalken */
+.split{display:flex;height:34px;border:1px solid var(--rule);overflow:hidden}
+.split div{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:var(--invert-ink);
+  min-width:0;overflow:hidden;white-space:nowrap}
+.split .s1{background:var(--back)} .split .s2{background:var(--out);opacity:.55}
+.split .s3{background:var(--out)} .split .s4{background:var(--out);opacity:.78}
+.splitleg{display:flex;gap:16px;flex-wrap:wrap;margin-top:9px;font-size:12px;color:var(--ink-2)}
+.splitleg i{display:inline-block;width:9px;height:9px;margin-right:6px}
+
+/* Zwei Seiten: links dein Geld, rechts der Staat */
+.duo{display:grid;grid-template-columns:minmax(290px,.86fr) 1.55fr;gap:18px;align-items:start}
+@media(max-width:980px){.duo{grid-template-columns:1fr}}
+.stack{display:flex;flex-direction:column;gap:18px;min-width:0}
+.stripe{height:3px}
+
+/* Einklappbare Blöcke */
+details.fold{border-bottom:1px solid var(--rule)}
+details.fold:last-of-type{border-bottom:none}
+details.fold>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:11px 15px;cursor:pointer}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary:hover{background:var(--card-2)}
+details.fold>summary:focus-visible{outline:2px solid var(--out);outline-offset:-2px}
+details.fold .t{flex:1;font-weight:700;font-size:14px;min-width:0}
+details.fold .amt{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:17px;font-weight:600}
+details.fold .yr{font-size:11.5px;color:var(--muted);font-family:"IBM Plex Mono",monospace}
+details.fold[open]>summary{background:var(--card-2);border-bottom:1px solid var(--rule)}
+details.fold[open] .fchev{transform:rotate(90deg)}
+.fchev{width:14px;height:14px;flex:none;color:var(--muted);transition:transform .18s}
+.foldb{padding:10px 15px 14px}
+.line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:13.5px;padding:3px 0}
+.line>span:last-child{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;flex:none}
+.line .q{font-size:11px;color:var(--muted);font-family:"IBM Plex Mono",monospace;margin-left:6px}
+.line.mini-bar{position:relative}
+.line.mini-bar::after{content:"";position:absolute;left:0;bottom:0;height:2px;background:var(--out-soft);width:var(--w,0)}
+.tot{display:flex;justify-content:space-between;border-top:1px solid var(--rule-2);padding-top:8px;margin-top:7px;
+  font-weight:800;font-size:14px}
+.tot span:last-child{font-family:"IBM Plex Mono",monospace}
+.headrow{display:flex;justify-content:space-between;align-items:baseline;font-size:15px;font-weight:800;
+  padding-bottom:8px;border-bottom:1px solid var(--rule-2);margin-bottom:6px}
+.headrow span:last-child{font-family:"IBM Plex Mono",monospace;font-size:17px}
+
+/* Beitrag */
+.beitrag{display:flex;flex-direction:column;gap:12px}
+.bz{display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap}
+.bz b{display:block;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  font-weight:600;line-height:1;letter-spacing:-.01em}
+.bz span{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-top:6px}
+.bz b{font-size:28px}
+.bz-main b{color:var(--ink)}
+.bz-sec{padding-left:24px;border-left:1px solid var(--rule)}
+.bz-sec b{color:var(--ink-2)}
+.bz-cl{font-size:13.5px;color:var(--ink-2);margin:0;max-width:62ch}
+
+/* Kontoauszug */
+.lhead,.row,.srow,.ltot{display:grid;grid-template-columns:1fr 74px 88px 112px 24px;gap:10px;align-items:center}
+.lhead{padding:0 14px 7px;border-bottom:1.5px solid var(--ink)}
+.lhead span{text-align:right}.lhead span:first-child{text-align:left}
+.row{padding:8px 14px;border-bottom:1px solid var(--rule);width:100%;background:none;border-left:0;border-right:0;
+  border-top:0;font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+.row:hover{background:var(--card-2)}
+.row:focus-visible{outline:2px solid var(--out);outline-offset:-2px}
+.row .nm{display:flex;align-items:center;gap:8px;min-width:0}
+.row .nm b{font-weight:700;font-size:14px}
+.row .v{text-align:right;font-size:14px}
+.row .v.y{font-weight:700}
+.row .share{font-size:12px;color:var(--muted)}
+.pp{display:block;font-size:10.5px;margin-top:1px}
+.srow a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--rule-2)}
+.srow a:hover{color:var(--out);border-color:var(--out)}
+.srow a:focus-visible{outline:2px solid var(--out);outline-offset:2px}
+.chev{width:15px;height:15px;flex:none;transition:transform .18s;color:var(--muted)}
+.row[aria-expanded="true"] .chev{transform:rotate(90deg)}
+.bar{height:5px;background:var(--rule);position:relative;margin-top:5px;max-width:210px}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--out)}
+.sub{display:none}.sub.open{display:block}
+.srow{padding:5px 14px 5px 36px;border-bottom:1px solid var(--rule);background:var(--card-2);
+  font-size:13px;color:var(--ink-2)}
+.srow .v{text-align:right}
+.srow .open-detail{background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:0;justify-self:end}
+.srow .open-detail:hover{color:var(--out)}
+.ltot{padding:11px 14px;border-top:1.5px solid var(--ink);font-weight:800}
+.ltot .v{text-align:right}
+.credit{display:flex;justify-content:space-between;gap:14px;align-items:center;background:var(--card-2);
+  border-left:3px solid var(--warn);padding:10px 14px;margin:12px 15px 0;font-size:13.5px}
+.credit .v{font-weight:700;color:var(--warn)}
+
+/* Rückfluss */
+.rueck{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:13px 15px}
+@media(max-width:700px){.rueck{grid-template-columns:1fr}}
+.rueck .rb-v{font-family:"IBM Plex Mono",monospace;font-size:27px;font-weight:600}
+.rueck .rb-s{font-size:12px;color:var(--muted)}
+
+/* Werkstatt */
+.shop{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}
+@media(max-width:900px){.shop{grid-template-columns:1fr}}
+.measure{display:flex;gap:11px;padding:11px 15px;border-bottom:1px solid var(--rule);align-items:flex-start}
+.measure:last-of-type{border-bottom:none}
+.measure input{margin:3px 0 0;accent-color:var(--out);width:16px;height:16px;flex:none}
+.measure .mt{font-size:13.5px;font-weight:700;line-height:1.3}
+.measure .ms{font-size:11.5px;color:var(--muted);margin-top:3px}
+.measure .mi{font-family:"IBM Plex Mono",monospace;font-size:11px;margin-top:4px;color:var(--ink-2)}
+.measure.empty .mt{color:var(--muted)}
+.slider{padding:13px 15px;border-top:1px solid var(--rule)}
+.slider input{width:100%;accent-color:var(--out)}
+.delta{font-family:"IBM Plex Mono",monospace;font-size:12px;margin-left:7px}
+.up{color:var(--warn)}.down{color:var(--back)}
+.flow{padding:14px;overflow-x:auto}
+.flow svg{display:block;min-width:700px}
+
+/* Detail */
+.scrim{position:fixed;inset:0;background:rgba(8,12,20,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.detail{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--card);z-index:41;
+  border-left:1px solid var(--rule-2);transform:translateX(100%);transition:transform .24s;overflow-y:auto;
+  box-shadow:-18px 0 44px var(--shadow)}
+.detail.on{transform:none}
+.dhead{padding:20px 24px 14px;border-bottom:1px solid var(--rule);position:sticky;top:0;background:var(--card)}
+.dhead h2{font-size:24px;margin-top:5px}
+.dclose{position:absolute;top:16px;right:18px;background:none;border:1px solid var(--rule-2);color:var(--ink);
+  width:29px;height:29px;cursor:pointer;font-size:14px}
+.dbody{padding:18px 24px 60px;display:flex;flex-direction:column;gap:20px}
+.dbody h4{font-family:"Manrope",sans-serif;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 6px}
+.dbody p{margin:0;font-size:14px;color:var(--ink-2)}
+.kv{display:grid;grid-template-columns:1fr auto;gap:5px 14px;font-size:13.5px}
+.kv span:nth-child(even){font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.init{border-left:3px solid var(--rule-2);padding:2px 0 2px 11px;margin-bottom:11px}
+.init .st{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.stub{border:1px dashed var(--rule-2);padding:11px 13px;font-size:13px;color:var(--muted)}
+.tag{display:inline-block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule-2);
+  padding:2px 7px;color:var(--muted)}
+footer{max-width:1240px;margin:0 auto;padding:0 22px 50px;font-size:11.5px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="rail">
+  <div class="rail-in">
+    <div class="brandrow">
+      <div class="brand">Staatskonto</div>
+      <div class="brand-sub">Dein Anteil am Staatshaushalt, Österreich</div>
+      <div class="spacer"></div>
+      <button class="ghost" id="themeBtn" type="button">Dunkel</button>
+    </div>
+    <div class="inputs">
+      <div class="fieldwrap">
+        <span class="lbl">Dein Netto im Monat</span>
+        <label class="field field--big"><input id="netto" type="number" value="2099" step="10" min="0" aria-label="Nettogehalt im Monat"><span class="cur">EUR</span></label>
+      </div>
+      <div class="fieldwrap">
+        <span class="lbl">Brutto dazu</span>
+        <label class="field field--small"><input id="brutto" type="number" value="2843" step="10" min="0" aria-label="Bruttogehalt im Monat"><span class="cur">EUR</span></label>
+      </div>
+      <div class="fieldwrap">
+        <span class="lbl">Rechnet mit <button class="info" type="button" data-src="#i-felder">i</button></span>
+        <div class="picks">
+          <select id="jahr"><option>2026</option></select>
+          <select id="kinder"><option>0 Kinder</option><option>1 Kind</option><option selected>2 Kinder</option><option>3 Kinder und mehr</option></select>
+          <select id="fam"><option>ledig</option><option selected>verheiratet</option><option>verheiratet, Partner ohne Einkommen</option><option>alleinerziehend</option></select>
+        </div>
+      </div>
+      <div class="fieldwrap">
+        <span class="lbl" style="opacity:.6">Nur Vergleich</span>
+        <div class="picks" style="opacity:.6">
+          <select id="alter"><option>unter 30</option><option selected>30 bis 50</option><option>über 50</option></select>
+          <select id="ausb"><option>Pflichtschule</option><option selected>Lehre</option><option>Matura</option><option>Hochschule</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-view="blatt">Blatt</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="werkstatt">Werkstatt</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="fluss">Fluss</button>
+    </div>
+  </div>
+</div>
+
+<div class="src" id="i-felder">Die zwei Geldfelder hängen zusammen: ändere eines, das andere rechnet über den Lohnsteuertarif 2026 nach. <b>Kinder und Familienstand</b> wirken auf Familienbonus und Absetzbeträge, also auf dein Netto, und auf den Block <b>Was zurückkommt</b>. <b>Alter und Ausbildung</b> rechnen noch nicht, sie sollen später das Durchschnittsgehalt deiner Gruppe und die Gesundheitskosten deiner Altersgruppe setzen.</div>
+<div class="src" id="i-split">Die Arbeitskosten deiner Stelle sind Brutto plus Dienstgeberanteil. Der Balken teilt sie in vier Stücke, die zusammen genau diese Summe ergeben. Die Verbrauchsteuer ist dabei ein Stück deines Nettos, kein zusätzlicher Abzug.</div>
+<div class="src" id="i-a">Anteile aus der <b>Konsumerhebung 2024/25</b> der Statistik Austria, angewendet auf das, was dir nach dem Sparen bleibt. Ein Durchschnittshaushalt gibt 4.170 im Monat aus, davon 1.100 für Wohnen. Die Sparquote von 9 Prozent ist gesetzt.</div>
+<div class="src" id="i-b">Sozialversicherung 18,07 Prozent bis zur Höchstbeitragsgrundlage von 6.930 im Monat. Lohnsteuer nach dem Tarif 2026, steuerfrei bis 13.539 im Jahr, dann 20, 30, 40, 48, 50 und 55 Prozent. Verkehrsabsetzbetrag 496. Die 13. und 14. Zahlung mit 6 Prozent über dem Freibetrag von 620. <b>Familienbonus</b> 2.000 je Kind, bei zwei verdienenden Eltern zur Hälfte angesetzt, weil er üblicherweise geteilt wird. Absetzbeträge für Alleinverdienende und Alleinerziehende 612, 828 und 1.101.</div>
+<div class="src" id="i-c">Dienstgeberseite nach den gesetzlichen Sätzen 2026: Sozialversicherung 20,98, Kommunalsteuer 3,0, Dienstgeberbeitrag und Zuschlag 4,07, Betriebliche Vorsorge 1,53 Prozent. Zusammen 29,58 Prozent des Bruttolohns. Die <b>Verbrauchsteuer</b> ist der eine frei gesetzte Parameter des ganzen Blattes, verstellbar in der Werkstatt.</div>
+<div class="src" id="i-hero">Das ist die Summe aus B und C. Sie ist kein Abzug von deinem Konto, sondern alles, was deine Arbeit und dein Konsum an Staat und Sozialversicherung abgeben.</div>
+<div class="src" id="i-ledger">Die Zuteilung ist eine <b>Konvention, keine Tatsache</b>. Geld ist nicht eingefärbt, dein Beitrag finanziert nicht anteilig jede Aufgabe. Das Blatt zeigt, wie sich die Staatsausgaben aufteilen, und rechnet deinen Beitrag in diese Aufteilung um. Quelle: Eurostat, Sektor Staat Österreich 2024, Ausgaben nach COFOG-Gruppen.</div>
+<div class="src" id="i-mass">Jede Maßnahme ist im Repo eine Datei mit Titel, Stand, Quelle und Wirkung in Millionen pro Jahr. Die Oberfläche liest den Ordner und baut daraus die Schalter. Wer eine Maßnahme ergänzen will, schickt eine Datei, keinen Code. Hausregel: nur Zahlen aus Wirkungsfolgenabschätzung, Budgetdienst oder Rechnungshof. Gibt es keine, bleibt das Feld leer, und das Blatt sagt das.</div>
+
+<main class="sheet">
+  <div class="head">
+    <div style="flex:1;min-width:280px">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px">
+        <span class="lbl">Abrechnung 2026 · Datenstand Staat 2024</span>
+        <span class="seg" role="group" aria-label="Zeitraum">
+          <button type="button" data-per="m" aria-pressed="true">Monatlich</button>
+          <button type="button" data-per="j" aria-pressed="false">Jährlich</button>
+        </span>
+      </div>
+      <h1 id="h1">Was du einzahlst und wofür es verwendet wird</h1>
+    </div>
+    <p class="lede" id="lede">Trag dein Netto ein. Alles andere rechnet sich daraus. Klick eine Zeile an, um zu sehen, was darin steckt.</p>
+  </div>
+
+  <!-- Verteilungsbalken -->
+  <section class="card" id="splitCard">
+    <div class="card-h"><h3>Deine Arbeitskosten</h3><span class="sub" id="splitSum">—</span>
+      <button class="info" type="button" data-src="#i-split">i</button></div>
+    <div class="card-b">
+      <div class="split" id="splitBar"></div>
+      <div class="splitleg">
+        <span><i style="background:var(--back)"></i>bleibt dir</span>
+        <span><i style="background:var(--out);opacity:.55"></i>Verbrauchsteuer</span>
+        <span><i style="background:var(--out)"></i>Lohnsteuer und SV</span>
+        <span><i style="background:var(--out);opacity:.78"></i>Dienstgeber</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BLATT: links dein Geld, rechts der Staat ===== -->
+  <section id="view-blatt" class="duo">
+
+    <div class="stack">
+      <div class="card">
+        <div class="stripe" style="background:var(--back)"></div>
+        <div class="card-h"><h3>A · Dein Alltag</h3><span class="sub">was du selbst ausgibst</span>
+          <button class="info" type="button" data-src="#i-a">i</button></div>
+        <div class="card-b">
+          <div class="headrow"><span>Du gibst aus</span><span id="c-ausgabe">—</span></div>
+          <div id="c-konsum"></div>
+          <div class="tot"><span>Sparquote 9 %</span><span id="c-spar">—</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="stripe" style="background:var(--back)"></div>
+        <div class="card-h"><h3>Was zurückkommt</h3><span class="sub" id="r-sub">Familienleistungen</span>
+          <button class="info" type="button" data-src="#r-note">i</button></div>
+        <div class="card-b">
+          <div id="r-rows"></div>
+        </div>
+        <div class="src" id="r-note"></div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <div class="stripe" style="background:var(--out)"></div>
+        <div class="card-h">
+          <h3>Deine Steuern und Abgaben</h3>
+          <button class="info" type="button" data-src="#i-hero">i</button>
+          <span class="hdiv"></span>
+          <span class="sub" id="bigline">—</span>
+        </div>
+        <div class="twohalf">
+          <div class="half-l">
+          <details class="fold">
+            <summary>
+              <svg class="fchev" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+              <span class="t">B · Vom Brutto weg</span>
+              <button class="info" type="button" data-src="#i-b">i</button>
+              <span class="amt" id="c-direkt">—</span>
+            </summary>
+            <div class="foldb"><div id="c-direktrows"></div></div>
+          </details>
+          <details class="fold">
+            <summary>
+              <svg class="fchev" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+              <span class="t">C · Über Arbeit und Konsum</span>
+              <button class="info" type="button" data-src="#i-c">i</button>
+              <span class="amt" id="c-indirekt">—</span>
+            </summary>
+            <div class="foldb"><div id="c-indirektrows"></div></div>
+          </details>
+          </div>
+          <div class="half-r">
+            <div class="bz">
+              <div class="bz-main"><b id="big-m">—</b><span id="big-lbl">im Monat</span></div>
+              <div class="bz-sec" id="saldoWrap"><b id="r-saldo">—</b><span id="r-saldo2">nach Rückfluss</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h3>Wofür dein Beitrag verwendet wird</h3>
+          <span class="sub">Klick eine Zeile auf</span>
+          <button class="info" type="button" data-src="#i-ledger">i</button></div>
+        <div class="card-b" style="padding:12px 0 0">
+          <div class="lhead lbl"><span>Aufgabe</span><span>Anteil</span><span>2016</span><span id="lh-per">Monat</span><span></span></div>
+          <div id="rows"></div>
+          <div class="ltot"><span>Summe</span><span class="v">100 %</span><span class="v">100 %</span><span class="v" id="t-m">—</span><span></span></div>
+          <div class="credit"><span>Dazu nimmt der Staat für dich Kredit auf. Den zahlst du später. Oder deine Kinder.</span>
+            <span class="v" id="t-kredit">—</span></div>
+          <div style="height:14px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WERKSTATT ===== -->
+  <section id="view-werkstatt" hidden>
+    <div class="shop">
+      <div class="card">
+        <div class="card-h"><h3>Wirkung auf dein Blatt</h3><span class="sub" id="w-d">unverändert</span></div>
+        <div class="card-b" style="padding:12px 0 0">
+          <div class="lhead lbl"><span>Aufgabe</span><span>Anteil</span><span>2016</span><span id="lh-per2">Monat</span><span></span></div>
+          <div id="rows2"></div>
+          <div class="ltot"><span>Summe</span><span class="v">100 %</span><span class="v">100 %</span><span class="v" id="w-m">—</span><span></span></div>
+          <div style="height:14px"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3>Maßnahmen</h3><span class="sub">schalten und vergleichen</span>
+          <button class="info" type="button" data-src="#i-mass">i</button></div>
+        <div id="measures"></div>
+        <div class="slider">
+          <span class="lbl">Verbrauchsteuer auf deine Ausgaben</span>
+          <input id="vstRate" type="range" min="10" max="30" value="21" step="1" aria-label="Satz der Verbrauchsteuern">
+          <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted)">
+            <span>10 %</span><span class="num" id="vstVal" style="color:var(--out);font-weight:700">21 %</span><span>30 %</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FLUSS ===== -->
+  <section id="view-fluss" hidden>
+    <div class="card">
+      <div class="card-h"><h3>Der Weg deines Geldes</h3><span class="sub">Bandbreite entspricht dem Jahresbetrag</span></div>
+      <div class="flow"><svg id="sankey" viewBox="0 0 980 470" role="img" aria-label="Flussdiagramm von den Arbeitskosten zu den Staatsaufgaben"></svg></div>
+    </div>
+  </section>
+</main>
+
+<footer>Prototyp. Offene Daten, offener Code: Rohdaten als CSV mit Abrufskript, Modell als reine Funktion, Maßnahmen und Positionstexte als eigene Dateien. Code MIT, Texte CC-BY.</footer>
+
+<div id="pop" role="tooltip"></div>
+<div class="scrim" id="scrim"></div>
+<aside class="detail" id="detail" aria-hidden="true">
+  <div class="dhead">
+    <button class="dclose" id="dclose" type="button" aria-label="Schließen">✕</button>
+    <span class="lbl" id="d-kicker">Position</span><h2 id="d-title">—</h2>
+  </div>
+  <div class="dbody" id="d-body"></div>
+</aside>
+
+<script>
+const F = {
+  POS:[
+    {id:"GF10",n:"Pensionen, Beihilfen, AMS, Pflegegeld",mio:112496,p16:75027,sub:[
+      ["Alterspensionen",70696,"https://www.pv.at/"],
+      ["Familienleistungen und Kinder",10258,"https://www.bundeskanzleramt.gv.at/agenda/familie/familienbeihilfe.html"],
+      ["Krankheit und Behinderung",8717,"https://www.sozialversicherung.gv.at/"],
+      ["Soziale Notlagen",8272],
+      ["Hinterbliebene",6687,"https://www.pv.at/"],
+      ["Arbeitslosigkeit",6102,"https://www.ams.at/"],
+      ["Pflege und Übrige",1764,"https://www.sozialministerium.gv.at/Themen/Pflege/Pflegegeld.html"]]},
+    {id:"GF07",n:"Spitäler, Ärztinnen, Medikamente",mio:46782,p16:29392,sub:[
+      ["Spitäler",26328,"https://goeg.at/"],
+      ["Niedergelassene Ärztinnen und Ärzte",9014,"https://www.sozialversicherung.gv.at/"],
+      ["Medikamente und Hilfsmittel",5888],
+      ["Öffentlicher Gesundheitsdienst",1284,"https://goeg.at/"],
+      ["Übrige",4268]]},
+    {id:"GF04",n:"Verkehr, Energie, Wirtschaft",mio:35029,p16:21125,sub:[
+      ["Schiene: Zuschuss an die ÖBB-Infrastruktur",2510,"https://infrastruktur.oebb.at/"],
+      ["Straßen der Länder und Gemeinden, Öffis, übriger Verkehr",14376],
+      ["Wirtschaft und Arbeitsmarkt allgemein",7456],
+      ["Forschung und Entwicklung",5131],
+      ["Energie",2066],
+      ["Landwirtschaft und Forst",2059],
+      ["Übrige",1431]]},
+    {id:"GF01",n:"Ämter, Gemeinden, Zinsen",mio:29860,p16:23218,sub:[
+      ["Verwaltung und Finanzverwaltung",10158],
+      ["Zinsen für alte Schulden",8277,"https://www.oebfa.at/"],
+      ["Allgemeine Dienste",7547],
+      ["Übrige",3878]]},
+    {id:"GF09",n:"Kindergärten, Schulen, Universitäten",mio:26092,p16:17520,sub:[
+      ["Sekundarstufe",10315,"https://www.bmbwf.gv.at/"],
+      ["Kindergarten und Volksschule",8547,"https://www.bmbwf.gv.at/"],
+      ["Hochschulen",4092,"https://www.bmbwf.gv.at/"],
+      ["Schülertransport und Verpflegung",1142],
+      ["Übrige",1996]]},
+    {id:"GF03",n:"Polizei, Justiz, Feuerwehr",mio:7398,p16:4806,sub:[
+      ["Polizei",3691,"https://www.bmi.gv.at/"],
+      ["Gerichte",1456],
+      ["Feuerwehr",1001],
+      ["Übrige",1250]]},
+    {id:"GF08",n:"Sport, Musikschulen, Museen, Kirchen",mio:6247,p16:4306,sub:[
+      ["Kultur",2813,"https://www.bmkoes.gv.at/"],
+      ["Sport und Erholung",1711,"https://www.bmkoes.gv.at/"],
+      ["Rundfunk und Verlagswesen",1315],
+      ["Religionsgemeinschaften",245],
+      ["Übrige",163]]},
+    {id:"GF05",n:"Abwasser, Luft, Abfall",mio:3484,p16:1269,sub:[
+      ["Luftreinhaltung und Lärmschutz",2266],
+      ["Abwasser",382],
+      ["Abfall und übriger Umweltschutz",836]]},
+    {id:"GF02",n:"Bundesheer",mio:3340,p16:2168,sub:[
+      ["Betrieb, Personal, Investitionen",3340,"https://www.bundesheer.at/"]]},
+    {id:"GF06",n:"Wohnbauförderung, Ortsentwicklung",mio:1940,p16:1277,sub:[
+      ["Wohnbau",1169],["Ortsentwicklung",205],["Wasser, Beleuchtung, übrige",566]]}
+  ],
+  MEAS:[
+    {id:"val",t:"Valorisierung der Familienleistungen wieder in Kraft",s:"Forderung des Familienverbandes",q:"Budgetdienst, UG 25",mio:416,pos:"GF10"},
+    {id:"dgb",t:"Dienstgeberbeitrag von 3,7 auf 2,7 Prozent",s:"beschlossen, wirksam ab 2028",q:"Budgetdienst, BBG 2027-2028",mio:0,pos:null,dgb:-0.01},
+    {id:"zd",t:"Zukunftsdepot, Startguthaben für zwei Jahrgänge",s:"Begutachtung abgeschlossen",q:"§ 39p FLAG, 40 Mio. je Jahr",mio:40,pos:"GF10"},
+    {id:"pens",t:"Faktisches Pensionsantrittsalter plus ein Jahr",s:"ohne belegte Wirkungsrechnung",q:"keine Quelle, Feld bleibt leer",mio:null,pos:"GF10"}
+  ],
+  TXT:{
+    GF10:{was:"Pensionen, Familienleistungen, Arbeitslosengeld, Pflegegeld und Sozialhilfe. Der größte Block, und der einzige, bei dem fast jeder im Lauf seines Lebens auf beiden Seiten steht.",
+      wer:"Bund und Sozialversicherung, bei Pflege und Sozialhilfe die Länder.",
+      mg:[["Pensionen monatlich ausbezahlt","2,6 Mio."],["Familienbeihilfe für Kinder","2,0 Mio."],["Pflegegeld, Beziehende","0,5 Mio."]],
+      inits:[["Valorisierung ausgesetzt 2026 bis 2028","beschlossen","829 Mio. weniger an Familienleistungen in drei Jahren, real 8 bis 9 Prozent Kaufkraftverlust bei der Familienbeihilfe."],["Zukunftsdepot","Regierungsvorlage offen","80 Mio. aus dem FLAF für zwei Geburtsjahrgänge, dazu 43 Mio. Steuerausfall bis 2030."]]},
+    GF04:{was:"Schiene, öffentlicher Verkehr, Straßen der Länder und Gemeinden, Energieförderung, Wirtschafts- und Arbeitsmarktförderung sowie angewandte Forschung. Die Autobahnen stecken nicht darin, sie werden aus Maut und Vignette finanziert.",
+      wer:"Bund für die Schiene, Länder für Landesstraßen, Gemeinden für den Ortsbereich. Die Autobahnen betreibt die ASFINAG, sie liegt außerhalb des Staatssektors.",
+      mg:[["Zuschuss des Bundes an die ÖBB-Infrastruktur 2024","2,51 Mrd."],["ÖBB-Rahmenplan 2024 bis 2029","21,1 Mrd."],["ASFINAG, Investition 2024","1,5 Mrd."],["ASFINAG, Mauteinnahmen 2024","2,5 Mrd."],["davon Vignette","609 Mio."],["Autobahn und Schnellstraße","2.200 km"]],
+      inits:[["Die Autobahn kostet dich keine Steuern","Befund","Die ASFINAG finanziert Bau und Erhaltung ausschließlich aus Nutzungsentgelten, ohne Zuschuss aus dem Bundesbudget. Statistik Austria führt sie als Marktproduzent außerhalb des Staatssektors, weil sie ihre Kosten zu mehr als der Hälfte aus Markterlösen deckt. In dieser Tabelle taucht sie deshalb nicht auf. Was du über Maut und Vignette zahlst, steht auf keinem Steuerbescheid."],["Schiene statt Straße","laufend","Vom Verkehrsbudget des Staates geht der sichtbarste Einzelposten an die Schiene: 2,51 Mrd. Zuschuss an die ÖBB-Infrastruktur im Jahr 2024. Bis 2029 sind 21,1 Mrd. an Investitionen geplant, darunter Semmering-, Koralm- und Brennertunnel."]]},
+    GF01:{was:"Die Verwaltung selbst, von der Gemeindestube bis zur Botschaft, dazu die Zinsen für die Schulden der Vorjahre.",
+      wer:"Alle drei Ebenen. Die Zinsen trägt überwiegend der Bund.",
+      mg:[["Zinsen je Jahr","8,3 Mrd."],["Anteil der Zinsen an dieser Position","28 %"]],
+      inits:[["Steigende Zinsausgaben","laufend","Die staatlichen Zinsausgaben steigen 2027 auf rund 11 Mrd. Jeder zusätzliche Prozentpunkt trifft diese Zeile zuerst."]]}
+  }
+};
+
+/* Tarif und Beiträge 2026 */
+const SV=.1807, HBGL_M=6930, HBGL_SZ=13860, VAB=496, SZ_FREI=620, SZ_ST=.06;
+const TARIF=[[13539,0],[21992,.20],[36458,.30],[70365,.40],[104859,.48],[1000000,.50],[Infinity,.55]];
+const FB_KIND=2000, AVAB=[0,612,828,1101];
+function lohnsteuer(j){let t=0,p=0;for(const[l,r]of TARIF){if(j<=p)break;t+=(Math.min(j,l)-p)*r;p=l;}return Math.max(0,t-VAB);}
+function kinderZahl(){return parseInt(document.getElementById("kinder").value,10)||0;}
+function absetz(){
+  const k=kinderZahl(), f=document.getElementById("fam").value;
+  const allein=(f==="alleinerziehend"||f==="verheiratet, Partner ohne Einkommen");
+  return {fb:k*FB_KIND*(allein?1:.5), avab:(k>0&&allein)?AVAB[Math.min(k,3)]:0, k, allein};
+}
+function nettoAusBrutto(bm,a){
+  if(bm<=0)return 0; a=a||{fb:0,avab:0};
+  const lauf=bm*12, sz=bm*2, svL=Math.min(bm,HBGL_M)*12*SV, svS=Math.min(sz,HBGL_SZ)*SV;
+  const stL=Math.max(0,lohnsteuer(lauf-svL)-a.fb-a.avab), stS=Math.max(0,sz-svS-SZ_FREI)*SZ_ST;
+  return (lauf+sz-svL-svS-stL-stS)/14;
+}
+function bruttoAusNetto(nm,a){
+  if(nm<=0)return 0; let lo=0,hi=60000;
+  for(let i=0;i<48;i++){const m=(lo+hi)/2;(nettoAusBrutto(m,a)<nm?lo=m:hi=m);}
+  return Math.round((lo+hi)/2);
+}
+function rueckfluss(){
+  const k=kinderZahl(); if(!k)return{k:0,m:0,rows:[]};
+  const st=k===2?8.60:k>=3?21.10:0;
+  const rows=[["Familienbeihilfe, Annahme 3 bis 10 Jahre",k*148.00],["Kinderabsetzbetrag",k*70.90]];
+  if(st)rows.push(["Geschwisterstaffel",k*st]);
+  return {k,m:rows.reduce((a,r)=>a+r[1],0),rows};
+}
+
+const fmt=n=>Math.round(n).toLocaleString("de-AT").replace(/^-/,"−");
+const pct=n=>n.toLocaleString("de-AT",{minimumFractionDigits:1,maximumFractionDigits:1})+" %";
+const TOT=F.POS.reduce((a,p)=>a+p.mio,0), TOT16=F.POS.reduce((a,p)=>a+p.p16,0);
+const EXP_OVER_REV=273192/250239, MONTHS=14;
+let state={dg:.2958,spar:.09,vst:.21,per:"m",on:{}};
+const P=()=>state.per==="j"?{f:14,f12:12,lbl:"im Jahr",head:"Jahr"}:{f:1,f12:1,lbl:"im Monat",head:"Monat"};
+const KONSUM=[["Wohnen und Energie",26.4],["Verkehr",13.6],["Ernährung, alkoholfreie Getränke",11.6],
+  ["Freizeit, Sport, Kultur",11.4],["Gastronomie",6.6],["Wohnungsausstattung",6.2],["Gesundheit",4.8],
+  ["Versicherungen, Finanzen",4.7],["Andere Waren und Dienste",4.5],["Bekleidung und Schuhe",4.2],
+  ["Kommunikation",2.8],["Alkohol und Tabak",2.2],["Bildung",1.1]];
+
+const liste=(rows,maxV)=>rows.map(r=>{
+  const w = maxV ? Math.max(0,r[1])/maxV*100 : 0;
+  return '<div class="line'+(maxV?' mini-bar':'')+'" style="--w:'+w.toFixed(1)+'%">'+
+    '<span>'+r[0]+(r[2]?'<span class="q">'+r[2]+'</span>':'')+'</span><span>'+fmt(r[1])+'</span></div>';
+}).join("");
+
+function model(){
+  const b=+document.getElementById("brutto").value||0, n=+document.getElementById("netto").value||0;
+  const dgRate=state.dg+(state.on.dgb?F.MEAS.find(m=>m.id==="dgb").dgb:0);
+  const direkt=Math.max(0,b-n), dg=b*dgRate, vst=n*(1-state.spar)*state.vst;
+  const beitrag=direkt+dg+vst, shift={};
+  F.MEAS.forEach(m=>{if(state.on[m.id]&&m.mio&&m.pos)shift[m.pos]=(shift[m.pos]||0)+m.mio;});
+  const adj=F.POS.map(p=>({...p,mioAdj:p.mio+(shift[p.id]||0)}));
+  return {b,n,direkt,dg,vst,beitrag,adj,totAdj:adj.reduce((a,p)=>a+p.mioAdj,0),
+    kredit:beitrag*(EXP_OVER_REV-1), base:F.POS.map(p=>p.mio/TOT*beitrag)};
+}
+
+function renderSplit(m){
+  const kosten=m.b+m.dg, bleibt=Math.max(0,m.n-m.vst);
+  const seg=[["s1",bleibt,"bleibt dir"],["s2",m.vst,"Verbrauch"],["s3",m.direkt,"direkt"],["s4",m.dg,"Dienstgeber"]];
+  document.getElementById("splitBar").innerHTML=seg.map(s=>{
+    const w=kosten?s[1]/kosten*100:0;
+    return '<div class="'+s[0]+'" style="width:'+w.toFixed(2)+'%">'+(w>11?fmt(s[1]*P().f):"")+'</div>';
+  }).join("");
+  const anteil=kosten?(m.beitrag/kosten*100):0;
+  document.getElementById("splitSum").textContent=
+    fmt(kosten*P().f)+" "+P().lbl+" · "+pct(anteil)+" davon an Staat und Sozialversicherung";
+}
+
+function renderCols(m){
+  const g=id=>document.getElementById(id);
+  const F1=P().f, ausgabe=m.n*(1-state.spar);
+  g("c-ausgabe").textContent=fmt(ausgabe*F1);
+  g("c-spar").textContent=fmt(m.n*state.spar*F1);
+  g("c-konsum").innerHTML=liste(KONSUM.map(k=>[k[0],ausgabe*k[1]/100*F1,pct(k[1])]), ausgabe*0.264*F1);
+
+  const a=absetz(), lauf=m.b*12, sz=m.b*2;
+  const svL=Math.min(m.b,HBGL_M)*12*SV, svS=Math.min(sz,HBGL_SZ)*SV;
+  const tarif=lohnsteuer(lauf-svL), genutzt=Math.min(tarif,a.fb+a.avab);
+  const stS=Math.max(0,sz-svS-SZ_FREI)*SZ_ST;
+  const bRows=[["Sozialversicherung",(svL+svS)/14*F1,"18,1 %"],["Lohnsteuer nach Tarif",tarif/14*F1,""]];
+  if(genutzt>0)bRows.push(["Familienbonus und Absetzbeträge",-genutzt/14*F1,a.k+(a.k===1?" Kind":" Kinder")]);
+  bRows.push(["Steuer auf 13. und 14.",stS/14*F1,"6 %"]);
+  g("c-direkt").textContent=fmt(m.direkt*F1);
+  g("c-direktrows").innerHTML=liste(bRows,(svL+svS)/14*F1);
+
+  g("c-indirekt").textContent=fmt((m.dg+m.vst)*F1);
+  const cRows=[["Sozialversicherung Dienstgeber",m.b*.2098*F1,"21,0 %"],["Kommunalsteuer",m.b*.03*F1,"3,0 %"],
+    ["Dienstgeberbeitrag und Zuschlag",m.b*(state.on.dgb?.0307:.0407)*F1,state.on.dgb?"3,1 %":"4,1 %"],
+    ["Betriebliche Vorsorge",m.b*.0153*F1,"1,5 %"],["Umsatz- und Verbrauchsteuer",m.vst*F1,pct(state.vst*100)]];
+  g("c-indirektrows").innerHTML=liste(cRows,m.b*.2098*F1);
+
+  g("big-m").textContent=fmt(m.beitrag*F1);
+  g("big-lbl").textContent=P().lbl;
+  g("bigline").textContent=m.n
+    ? "1 Euro für dich, "+(m.beitrag/m.n).toLocaleString("de-AT",{minimumFractionDigits:2,maximumFractionDigits:2})+" für den Staat."
+    : "Trag dein Netto ein.";
+  renderRueck(m);
+}
+
+function renderRueck(m){
+  const r=rueckfluss(), g=id=>document.getElementById(id);
+  const bJ=m.beitrag*P().f, rJ=r.m*P().f12;
+  if(!r.k){
+    g("r-rows").innerHTML='<div class="line"><span>Ohne Kinder fließt über Familienleistungen nichts zurück.</span><span>0</span></div>';
+    g("r-sub").textContent="keine Familienleistungen";
+    g("r-note").textContent="Was an Schule, Spital und Straße zurückkommt, steht in der Tabelle darunter. Das ist eine Leistung, keine Überweisung.";
+  }else{
+    g("r-rows").innerHTML=liste(r.rows.map(x=>[x[0],x[1]*P().f12,""]))+
+      '<div class="tot"><span>Zusammen'+(state.per==="j"?", 12 Auszahlungen":"")+'</span><span>'+fmt(r.m*P().f12)+'</span></div>';
+    g("r-sub").textContent=r.k+(r.k===1?" Kind":" Kinder")+", "+fmt(r.m*P().f12)+" "+P().lbl;
+    g("r-note").textContent="Familienbeihilfe und Kinderabsetzbetrag werden zwölfmal ausbezahlt, das Gehalt vierzehnmal. Deshalb steht hier der Jahreswert daneben. Der Familienbonus steckt nicht hier, sondern in Spalte B, weil er die Lohnsteuer senkt.";
+  }
+  g("saldoWrap").hidden = rJ<=0;
+  g("r-saldo").textContent=fmt(bJ-rJ);
+  g("r-saldo2").textContent="nach Rückfluss von "+fmt(rJ);
+}
+
+function rowHTML(p,val,share,maxShare,delta){
+  const s16=p.p16/TOT16, dp=+(share*100-s16*100).toFixed(1);
+  const d=delta!==undefined&&Math.abs(delta)>=.5/P().f
+    ?'<span class="delta '+(delta>0?"up":"down")+'">'+(delta>0?"+":"−")+fmt(Math.abs(delta)*P().f)+'</span>':"";
+  return '<button class="row" type="button" aria-expanded="false" data-id="'+p.id+'">'+
+    '<span class="nm"><svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>'+
+    '<span><b>'+p.n+'</b><span class="bar"><i style="width:'+(share/maxShare*100).toFixed(1)+'%"></i></span></span></span>'+
+    '<span class="v share">'+pct(share*100)+'</span>'+
+    '<span class="v share">'+pct(s16*100)+'<span class="pp '+(dp>0?"up":"down")+'">'+(dp>0?"+":"−")+Math.abs(dp).toLocaleString("de-AT",{minimumFractionDigits:1,maximumFractionDigits:1})+'</span></span>'+
+    '<span class="v y">'+fmt(val*P().f)+d+'</span>'+
+    '<span class="v" aria-hidden="true">›</span></button>'+
+    '<div class="sub" data-sub="'+p.id+'">'+p.sub.map(s=>
+      '<div class="srow"><span>'+(s[2]?'<a href="'+s[2]+'" target="_blank" rel="noopener">'+s[0]+' <span aria-hidden="true">↗</span></a>':s[0])+'</span>'+
+      '<span class="v">'+pct(s[1]/p.mio*share*100)+'</span><span class="v"></span>'+
+      '<span class="v">'+fmt(s[1]/p.mio*val*P().f)+'</span>'+
+      '<button class="open-detail" type="button" data-detail="'+p.id+'" aria-label="Details">›</button></div>').join("")+'</div>';
+}
+
+function renderLedger(m,target,withDelta){
+  const maxShare=Math.max(...m.adj.map(p=>p.mioAdj/m.totAdj));
+  const el=document.getElementById(target);
+  el.innerHTML=m.adj.map((p,i)=>{
+    const share=p.mioAdj/m.totAdj, val=share*m.beitrag;
+    return rowHTML(p,val,share,maxShare,withDelta?val-m.base[i]:undefined);
+  }).join("");
+  el.querySelectorAll(".row").forEach(r=>r.addEventListener("click",e=>{
+    if(e.target.closest(".open-detail"))return;
+    const open=r.getAttribute("aria-expanded")==="true";
+    r.setAttribute("aria-expanded",String(!open));
+    r.nextElementSibling.classList.toggle("open",!open);
+  }));
+  el.querySelectorAll(".open-detail").forEach(b=>b.addEventListener("click",()=>openDetail(b.dataset.detail)));
+}
+
+function renderMeasures(){
+  document.getElementById("measures").innerHTML=F.MEAS.map(m=>{
+    const empty=m.mio===null;
+    return '<label class="measure'+(empty?" empty":"")+'"><input type="checkbox" data-m="'+m.id+'"'+
+      (empty?" disabled":"")+(state.on[m.id]?" checked":"")+'><span><span class="mt">'+m.t+'</span>'+
+      '<span class="ms">'+m.s+'</span><span class="mi">'+
+      (empty?"Wirkung: Feld leer":(m.dgb?"Dienstgeberbeitrag −1,0 Prozentpunkt":"+"+fmt(m.mio)+" Mio. je Jahr"))+
+      ' · '+m.q+'</span></span></label>';
+  }).join("");
+  document.querySelectorAll("[data-m]").forEach(c=>c.addEventListener("change",()=>{
+    state.on[c.dataset.m]=c.checked; update();
+  }));
+}
+
+function sankey(m){
+  const mid=[{n:"Netto, das dir bleibt",v:m.n*P().f,c:"var(--back)"},
+             {n:"Lohnsteuer und SV",v:m.direkt*P().f,c:"var(--out)"},
+             {n:"Dienstgeberanteil",v:m.dg*P().f,c:"var(--out)"},
+             {n:"Umsatz- und Verbrauchsteuer",v:m.vst*P().f,c:"var(--out)"}];
+  const top=[...m.adj].sort((a,b)=>b.mioAdj-a.mioAdj).slice(0,5);
+  const restMio=m.totAdj-top.reduce((a,p)=>a+p.mioAdj,0);
+  const right=[...top.map(p=>({n:p.n.split(",")[0],v:p.mioAdj/m.totAdj*m.beitrag*P().f})),
+               {n:"übrige Aufgaben",v:restMio/m.totAdj*m.beitrag*P().f}];
+  const scale=300/Math.max((m.b+m.dg)*P().f,1), lx=60,mx=420,rx=760;
+  let html='<rect x="'+lx+'" y="40" width="26" height="'+((m.b+m.dg)*P().f*scale)+'" fill="var(--ink)"/>'+
+    '<text x="'+lx+'" y="30" font-size="12" fill="currentColor" font-family="Manrope,sans-serif">Arbeitskosten '+fmt((m.b+m.dg)*P().f)+'</text>';
+  let srcY=40, yy=40; const midY=[];
+  mid.forEach(d=>{const h=Math.max(3,d.v*scale); midY.push([yy,h]); yy+=h+10;});
+  mid.forEach((d,i)=>{
+    const [ty,h]=midY[i];
+    html+='<path d="M'+(lx+26)+','+srcY+' C'+(lx+170)+','+srcY+' '+(mx-170)+','+ty+' '+mx+','+ty+
+      ' L'+mx+','+(ty+h)+' C'+(mx-170)+','+(ty+h)+' '+(lx+170)+','+(srcY+h)+' '+(lx+26)+','+(srcY+h)+' Z" fill="'+d.c+'" opacity=".3"/>'+
+      '<rect x="'+mx+'" y="'+ty+'" width="20" height="'+h+'" fill="'+d.c+'"/>'+
+      '<text x="'+(mx+28)+'" y="'+(ty+Math.max(12,h/2+4))+'" font-size="12" fill="currentColor" font-family="Manrope,sans-serif">'+d.n+' '+fmt(d.v)+'</text>';
+    srcY+=h;
+  });
+  let ry=40, feedY=midY[1][0];
+  right.forEach(d=>{
+    const h=Math.max(3,d.v*scale);
+    html+='<path d="M'+(mx+20)+','+feedY+' C'+(mx+180)+','+feedY+' '+(rx-180)+','+ry+' '+rx+','+ry+
+      ' L'+rx+','+(ry+h)+' C'+(rx-180)+','+(ry+h)+' '+(mx+180)+','+(feedY+h)+' '+(mx+20)+','+(feedY+h)+' Z" fill="var(--out)" opacity=".22"/>'+
+      '<rect x="'+rx+'" y="'+ry+'" width="20" height="'+h+'" fill="var(--out)"/>'+
+      '<text x="'+(rx+28)+'" y="'+(ry+Math.max(12,h/2+4))+'" font-size="12" fill="currentColor" font-family="Manrope,sans-serif">'+d.n+' '+fmt(d.v)+'</text>';
+    ry+=h+8; feedY+=h;
+  });
+  document.getElementById("sankey").innerHTML=html;
+}
+
+function openDetail(id){
+  const p=F.POS.find(x=>x.id===id), t=F.TXT[id], m=model();
+  const share=p.mio/TOT, val=share*m.beitrag;
+  document.getElementById("d-kicker").textContent="Position "+id;
+  document.getElementById("d-title").textContent=p.n;
+  let h='<div><h4>Dein Anteil</h4><div class="kv"><span>im Monat</span><span>'+fmt(val)+'</span>'+
+    '<span>im Jahr</span><span>'+fmt(val*14)+'</span><span>Anteil an allen Staatsausgaben</span><span>'+pct(share*100)+'</span>'+
+    '<span>Gesamtausgabe Österreich 2024</span><span>'+fmt(p.mio)+' Mio.</span></div></div>';
+  if(t){
+    h+='<div><h4>Was das ist</h4><p>'+t.was+'</p></div><div><h4>Wer darüber entscheidet</h4><p>'+t.wer+'</p></div>'+
+      '<div><h4>Was dafür da ist</h4><div class="kv">'+t.mg.map(r=>'<span>'+r[0]+'</span><span>'+r[1]+'</span>').join("")+'</div></div>'+
+      '<div><h4>Politische Initiativen</h4>'+t.inits.map(i=>'<div class="init"><span class="st">'+i[1]+'</span><br><b>'+i[0]+'</b><p>'+i[2]+'</p></div>').join("")+'</div>';
+  }else{
+    h+='<div class="stub">Für diese Position sind Beschreibung, Mengengerüst und Initiativen noch nicht erfasst. Im Repo ist das eine Datei je Position, erweiterbar ohne Codeänderung.</div>';
+  }
+  h+='<div><span class="tag">Quelle</span> <span style="font-size:13px;color:var(--muted)">Eurostat gov_10a_exp, Sektor Staat, Österreich 2024, COFOG-Gruppen.</span></div>';
+  document.getElementById("d-body").innerHTML=h;
+  document.getElementById("detail").classList.add("on");
+  document.getElementById("detail").setAttribute("aria-hidden","false");
+  document.getElementById("scrim").classList.add("on");
+}
+function closeDetail(){
+  document.getElementById("detail").classList.remove("on");
+  document.getElementById("detail").setAttribute("aria-hidden","true");
+  document.getElementById("scrim").classList.remove("on");
+}
+
+/* Infobubbles */
+const pop=document.getElementById("pop");
+let popOwner=null;
+function showPop(btn){
+  const src=document.querySelector(btn.dataset.src);
+  if(!src)return;
+  pop.innerHTML=src.innerHTML;
+  pop.classList.add("on"); popOwner=btn;
+  const r=btn.getBoundingClientRect();
+  pop.style.visibility="hidden"; pop.style.left="0px"; pop.style.top="0px";
+  const pw=pop.offsetWidth, ph=pop.offsetHeight;
+  let x=r.left+window.scrollX-pw/2+r.width/2;
+  x=Math.max(12,Math.min(x,window.innerWidth-pw-12));
+  let y=r.bottom+window.scrollY+8;
+  if(r.bottom+ph+20>window.innerHeight) y=r.top+window.scrollY-ph-8;
+  pop.style.left=x+"px"; pop.style.top=y+"px"; pop.style.visibility="visible";
+}
+function hidePop(){pop.classList.remove("on");popOwner=null;}
+document.addEventListener("click",e=>{
+  const b=e.target.closest(".info");
+  if(b){ e.preventDefault(); (popOwner===b)?hidePop():showPop(b); return; }
+  if(!e.target.closest("#pop")) hidePop();
+});
+window.addEventListener("resize",hidePop);
+window.addEventListener("scroll",hidePop,{passive:true});
+
+function update(){
+  const m=model();
+  renderSplit(m); renderCols(m);
+  renderLedger(m,"rows",false); renderLedger(m,"rows2",true);
+  document.getElementById("t-m").textContent=fmt(m.beitrag*P().f);
+  document.getElementById("t-kredit").textContent="+"+fmt(m.kredit*P().f)+" "+P().lbl;
+  document.getElementById("w-m").textContent=fmt(m.beitrag*P().f);
+  document.getElementById("lh-per").textContent=P().head;
+  document.getElementById("lh-per2").textContent=P().head;
+  document.getElementById("w-d").textContent=Object.values(state.on).some(Boolean)?"geändert":"unverändert";
+  sankey(m);
+}
+
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",String(x===t)));
+  ["blatt","werkstatt","fluss"].forEach(v=>document.getElementById("view-"+v).hidden=v!==t.dataset.view);
+  const map={blatt:["Was du einzahlst und wofür es verwendet wird","Trag dein Netto ein. Alles andere rechnet sich daraus. Klick eine Zeile an, um zu sehen, was darin steckt."],
+    werkstatt:["Was eine Maßnahme an deinem Blatt ändert","Schalte eine Maßnahme ein. Jede Zeile zeigt, um wie viel sich dein Beitrag für diese Aufgabe verschiebt."],
+    fluss:["Der Weg deines Geldes","Von den Arbeitskosten deiner Stelle bis zu den größten Aufgaben des Staates."]};
+  document.getElementById("h1").textContent=map[t.dataset.view][0];
+  document.getElementById("lede").textContent=map[t.dataset.view][1];
+  document.getElementById("splitCard").hidden=t.dataset.view==="fluss";
+  hidePop();
+}));
+const elB=document.getElementById("brutto"), elN=document.getElementById("netto");
+let linking=false;
+elN.addEventListener("input",()=>{if(linking)return;linking=true;elB.value=bruttoAusNetto(+elN.value||0,absetz());linking=false;update();});
+elB.addEventListener("input",()=>{if(linking)return;linking=true;elN.value=Math.round(nettoAusBrutto(+elB.value||0,absetz()));linking=false;update();});
+["kinder","fam","jahr"].forEach(id=>document.getElementById(id).addEventListener("change",()=>{
+  elB.value=bruttoAusNetto(+elN.value||0,absetz()); update();
+}));
+document.getElementById("vstRate").addEventListener("input",e=>{
+  state.vst=+e.target.value/100;
+  document.getElementById("vstVal").textContent=e.target.value+" %"; update();
+});
+document.getElementById("dclose").addEventListener("click",closeDetail);
+document.getElementById("scrim").addEventListener("click",closeDetail);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDetail();hidePop();}});
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const dark=document.documentElement.getAttribute("data-theme")==="dark";
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+  document.getElementById("themeBtn").textContent=dark?"Dunkel":"Hell";
+});
+document.querySelectorAll("[data-per]").forEach(b=>b.addEventListener("click",()=>{
+  state.per=b.dataset.per;
+  document.querySelectorAll("[data-per]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+  hidePop(); update();
+}));
+renderMeasures();
+elB.value=bruttoAusNetto(+elN.value||0,absetz());
+update();
+</script>
